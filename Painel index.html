@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Cris Prado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-6">
+    <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
+        <h1 class="text-3xl font-black text-yellow-400">PAINEL DE PEDIDOS 🌭</h1>
+        <div id="status-conexao" class="text-green-500 font-bold">● Sistema Online</div>
+    </header>
+
+    <div id="lista-pedidos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        </div>
+
+    <audio id="audio-alert" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFqUjWp4fBd_wl75uMmaGjRfJDS85FLe4",
+            authDomain: "cris-prado.firebaseapp.com",
+            projectId: "cris-prado",
+            storageBucket: "cris-prado.firebasestorage.app",
+            messagingSenderId: "316187175890",
+            appId: "1:316187175890:web:72288256711dfad37fb60b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const audio = document.getElementById('audio-alert');
+
+        // Escutar pedidos em tempo real
+        const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById('lista-pedidos');
+            
+            // Tocar som se houver novo pedido
+            snapshot.docChanges().forEach(change => {
+                if (change.type === "added") audio.play().catch(e => console.log("Som bloqueado pelo navegador"));
+            });
+
+            container.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-2xl shadow-xl border-t-4 ${p.status === 'preparando' ? 'bg-blue-800 border-blue-400' : 'bg-slate-800 border-yellow-400'}`;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">${new Date(p.data?.toDate()).toLocaleTimeString()}</span>
+                        <span class="bg-yellow-400 text-black text-[10px] px-2 py-1 rounded font-black uppercase">${p.status}</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">${p.cliente}</h3>
+                    <p class="text-sm text-slate-300 mb-4 italic">${p.endereco}</p>
+                    <div class="bg-slate-900/50 p-3 rounded-lg mb-4 text-sm">
+                        ${p.itens.map(i => `• ${i.name}<br>`).join('')}
+                    </div>
+                    <p class="font-bold text-green-400 mb-4">Total: R$ ${p.total.toFixed(2)} (${p.pagamento})</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="updateStatus('${doc.id}', 'preparando')" class="bg-blue-600 p-2 rounded text-xs font-bold">PREPARAR</button>
+                        <button onclick="finalizar('${doc.id}')" class="bg-green-600 p-2 rounded text-xs font-bold">CONCLUÍDO</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+
+        window.updateStatus = async (id, status) => {
+            await updateDoc(doc(db, "pedidos", id), { status: status });
+        };
+
+        window.finalizar = async (id) => {
+            if(confirm("Deseja remover esse pedido do painel?")) {
+                await deleteDoc(doc(db, "pedidos", id));
+            }
+        };
+    </script>
+</body>
+</html>
