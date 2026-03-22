@@ -5,14 +5,13 @@
     <title>Painel Cris Prado</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white p-6">
+<body class="bg-slate-900 text-white p-4 md:p-8">
     <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-        <h1 class="text-3xl font-black text-yellow-400">PAINEL DE PEDIDOS 🌭</h1>
-        <div id="status-conexao" class="text-green-500 font-bold">● Sistema Online</div>
+        <h1 class="text-3xl font-black text-yellow-400">PEDIDOS CRIS PRADO 🌭</h1>
+        <div class="text-green-500 font-bold text-sm">● LIVE</div>
     </header>
 
-    <div id="lista-pedidos" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        </div>
+    <div id="lista-pedidos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
     <audio id="audio-alert" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
@@ -33,37 +32,37 @@
         const db = getFirestore(app);
         const audio = document.getElementById('audio-alert');
 
-        // Escutar pedidos em tempo real
-        const q = query(collection(db, "pedidos"), orderBy("data", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(query(collection(db, "pedidos"), orderBy("data", "desc")), (snap) => {
             const container = document.getElementById('lista-pedidos');
-            
-            // Tocar som se houver novo pedido
-            snapshot.docChanges().forEach(change => {
-                if (change.type === "added") audio.play().catch(e => console.log("Som bloqueado pelo navegador"));
-            });
+            snap.docChanges().forEach(c => { if(c.type === "added") audio.play().catch(e => {}); });
 
             container.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const p = doc.data();
+            snap.forEach(d => {
+                const p = d.data();
+                const isPreparando = p.status === 'preparando';
+                const isConcluido = p.status === 'concluido';
+                
                 const card = document.createElement('div');
-                card.className = `p-5 rounded-2xl shadow-xl border-t-4 ${p.status === 'preparando' ? 'bg-blue-800 border-blue-400' : 'bg-slate-800 border-yellow-400'}`;
+                card.className = `p-5 rounded-2xl shadow-xl border-t-4 transition-all ${isConcluido ? 'opacity-60 bg-slate-800 border-green-500' : isPreparando ? 'bg-blue-900 border-blue-400 animate-pulse' : 'bg-slate-800 border-yellow-400'}`;
                 
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">${new Date(p.data?.toDate()).toLocaleTimeString()}</span>
-                        <span class="bg-yellow-400 text-black text-[10px] px-2 py-1 rounded font-black uppercase">${p.status}</span>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] font-bold text-slate-400">${p.data ? new Date(p.data.toDate()).toLocaleTimeString() : '...'}</span>
+                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase ${isConcluido ? 'bg-green-500' : isPreparando ? 'bg-blue-500' : 'bg-yellow-400 text-black'}">${p.status}</span>
                     </div>
-                    <h3 class="text-xl font-bold mb-1">${p.cliente}</h3>
-                    <p class="text-sm text-slate-300 mb-4 italic">${p.endereco}</p>
-                    <div class="bg-slate-900/50 p-3 rounded-lg mb-4 text-sm">
-                        ${p.itens.map(i => `• ${i.name}<br>`).join('')}
+                    <h3 class="text-xl font-bold">${p.cliente}</h3>
+                    <p class="text-xs text-blue-300 mb-2">📞 ${p.telefone}</p>
+                    <p class="text-sm text-slate-300 mb-4">${p.endereco}</p>
+                    <div class="bg-black/30 p-3 rounded-lg mb-4 text-sm font-mono italic">
+                        ${p.itens.map(i => `• ${i.name}`).join('<br>')}
                     </div>
-                    <p class="font-bold text-green-400 mb-4">Total: R$ ${p.total.toFixed(2)} (${p.pagamento})</p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="updateStatus('${doc.id}', 'preparando')" class="bg-blue-600 p-2 rounded text-xs font-bold">PREPARAR</button>
-                        <button onclick="finalizar('${doc.id}')" class="bg-green-600 p-2 rounded text-xs font-bold">CONCLUÍDO</button>
+                        ${!isConcluido ? `
+                            <button onclick="updateStatus('${d.id}', 'preparando')" class="bg-blue-600 p-2 rounded font-bold text-xs">PREPARAR</button>
+                            <button onclick="updateStatus('${d.id}', 'concluido')" class="bg-green-600 p-2 rounded font-bold text-xs">CONCLUÍDO</button>
+                        ` : `
+                            <button onclick="arquivar('${d.id}')" class="col-span-2 bg-slate-700 p-2 rounded font-bold text-xs uppercase tracking-widest">Apagar do Painel</button>
+                        `}
                     </div>
                 `;
                 container.appendChild(card);
@@ -71,13 +70,11 @@
         });
 
         window.updateStatus = async (id, status) => {
-            await updateDoc(doc(db, "pedidos", id), { status: status });
+            await updateDoc(doc(db, "pedidos", id), { status });
         };
 
-        window.finalizar = async (id) => {
-            if(confirm("Deseja remover esse pedido do painel?")) {
-                await deleteDoc(doc(db, "pedidos", id));
-            }
+        window.arquivar = async (id) => {
+            if(confirm("Remover permanentemente?")) await deleteDoc(doc(db, "pedidos", id));
         };
     </script>
 </body>
