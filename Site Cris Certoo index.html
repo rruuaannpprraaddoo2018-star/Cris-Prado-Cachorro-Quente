@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cris Prado Cachorro Quente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        h1 { font-family: 'Bangers', cursive; letter-spacing: 2px; }
+        .slogan { font-family: 'Pacifico', cursive; }
+        body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 pb-32">
+
+    <header class="bg-red-600 text-white p-8 text-center shadow-xl border-b-4 border-yellow-400">
+        <h1 class="text-5xl mb-2 italic text-yellow-100">Cris Prado</h1>
+        <p class="slogan text-xl text-yellow-200">O melhor hot dog da região!</p>
+        <div class="mt-4 inline-block bg-yellow-400 text-red-700 px-4 py-1 rounded-full font-bold text-sm">
+            🕒 Entrega: 30 - 50 min
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-8">
+        <section>
+            <h2 class="text-2xl font-bold mb-4 text-red-700 border-b-2 border-red-200">🌭 Cachorro Quente</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500 flex justify-between items-center">
+                    <div><h3 class="font-bold">Carne</h3><span class="text-green-600 font-bold">R$ 14,90</span></div>
+                    <button onclick="openCustomization('Carne', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl">+</button>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500 flex justify-between items-center">
+                    <div><h3 class="font-bold">Frango</h3><span class="text-green-600 font-bold">R$ 14,90</span></div>
+                    <button onclick="openCustomization('Frango', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl">+</button>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500 flex justify-between items-center">
+                    <div><h3 class="font-bold">Misto</h3><span class="text-green-600 font-bold">R$ 14,90</span></div>
+                    <button onclick="openCustomization('Misto', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl">+</button>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4 text-red-700 border-b-2 border-red-200">🥤 Bebidas</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-blue-500 flex justify-between items-center">
+                    <div><h3 class="font-bold">Coca-Cola Lata</h3><span class="text-green-600 font-bold">R$ 6,00</span></div>
+                    <div class="flex items-center gap-3 bg-gray-100 p-1 rounded-lg">
+                        <button onclick="changeQty('Coca-Cola Lata', 6.00, -1)" class="bg-white w-8 h-8 rounded shadow text-red-600">-</button>
+                        <span id="qty-Coca-Cola Lata" class="font-bold">0</span>
+                        <button onclick="changeQty('Coca-Cola Lata', 6.00, 1)" class="bg-white w-8 h-8 rounded shadow text-green-600">+</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-mayo" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6">
+            <h3 id="modal-item-name" class="text-2xl font-black mb-4 text-red-600 italic">PERSONALIZAR</h3>
+            <p class="font-bold mb-3">Deseja Maionese?</p>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="setMayo(false)" class="p-3 border-2 rounded-2xl font-bold">❌ NÃO</button>
+                <button onclick="setMayo(true)" class="p-3 border-2 rounded-2xl font-bold bg-green-50 border-green-500">✅ SIM</button>
+            </div>
+            <div id="mayo-flavors" class="hidden mb-6">
+                <select id="mayo-select" class="w-full p-4 border-2 border-yellow-400 rounded-xl font-bold">
+                    <option value="Maionese Verde">Maionese Verde</option>
+                    <option value="Maionese de Bacon">Maionese de Bacon</option>
+                    <option value="Cebola Caramelizada">Cebola Caramelizada</option>
+                </select>
+            </div>
+            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-xl">Confirmar</button>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-between items-center shadow-2xl z-40">
+        <div><p class="text-xs text-gray-400 font-bold">TOTAL</p><span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span></div>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-bold">Ver Carrinho</button>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 max-h-[90vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-4">Seu Pedido</h2>
+            <div id="cart-items" class="space-y-2 mb-6 border-b pb-4"></div>
+            <div class="space-y-3">
+                <input type="text" id="client-name" placeholder="Seu Nome" class="w-full p-3 border-2 rounded-xl">
+                <input type="text" id="address" placeholder="Endereço (Rua, Nº, Bairro)" class="w-full p-3 border-2 rounded-xl">
+                <input type="text" id="obs" placeholder="Ponto de Referência / Obs" class="w-full p-3 border-2 rounded-xl bg-blue-50">
+                <select id="payment" class="w-full p-3 border-2 rounded-xl font-bold">
+                    <option value="Pix">Pix</option>
+                    <option value="Cartão">Cartão (Maquininha)</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                </select>
+            </div>
+            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl mt-6">FINALIZAR PEDIDO 📲</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFqUjWp4fBd_wl75uMmaGjRfJDS85FLe4",
+            authDomain: "cris-prado.firebaseapp.com",
+            projectId: "cris-prado",
+            storageBucket: "cris-prado.firebasestorage.app",
+            messagingSenderId: "316187175890",
+            appId: "1:316187175890:web:72288256711dfad37fb60b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.cart = [];
+        window.total = 0;
+        let tempItem = null;
+        let hasMayo = false;
+
+        window.openCustomization = (name, price) => {
+            tempItem = { name, price };
+            document.getElementById('modal-item-name').innerText = name;
+            document.getElementById('modal-mayo').classList.remove('hidden');
+        };
+
+        window.setMayo = (val) => {
+            hasMayo = val;
+            document.getElementById('mayo-flavors').classList.toggle('hidden', !val);
+        };
+
+        window.confirmLanche = () => {
+            const sabor = hasMayo ? document.getElementById('mayo-select').value : 'Sem Maionese';
+            window.cart.push({ name: `${tempItem.name} (${sabor})`, price: tempItem.price });
+            window.total += tempItem.price;
+            updateDisplay();
+            document.getElementById('modal-mayo').classList.add('hidden');
+        };
+
+        window.changeQty = (name, price, delta) => {
+            const qtySpan = document.getElementById(`qty-${name}`);
+            let currentQty = parseInt(qtySpan.innerText);
+            let newQty = Math.max(0, currentQty + delta);
+            if(newQty !== currentQty) {
+                qtySpan.innerText = newQty;
+                window.total += (delta * price);
+                if(delta > 0) window.cart.push({name, price});
+                else { const idx = window.cart.findLastIndex(i => i.name === name); if(idx > -1) window.cart.splice(idx, 1); }
+                updateDisplay();
+            }
+        };
+
+        function updateDisplay() {
+            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
+            const container = document.getElementById('cart-items');
+            container.innerHTML = window.cart.map(i => `<div class="flex justify-between text-sm"><span>${i.name}</span><b>R$ ${i.price.toFixed(2)}</b></div>`).join('');
+        }
+
+        window.toggleCartModal = () => document.getElementById('cart-modal').classList.toggle('hidden');
+
+        window.finalizarPedido = async () => {
+            const btn = document.getElementById('btn-finalizar');
+            const nome = document.getElementById('client-name').value;
+            const endereco = document.getElementById('address').value;
+            const obs = document.getElementById('obs').value;
+            const pagamento = document.getElementById('payment').value;
+
+            if(!nome || !endereco) return alert("Preencha nome e endereço!");
+            
+            btn.disabled = true;
+            btn.innerText = "Enviando...";
+
+            try {
+                // SALVA NO FIREBASE
+                await addDoc(collection(db, "pedidos"), {
+                    cliente: nome,
+                    endereco: endereco,
+                    observacao: obs,
+                    itens: window.cart,
+                    total: window.total,
+                    pagamento: pagamento,
+                    status: "pendente",
+                    data: serverTimestamp()
+                });
+
+                // ABRE WHATSAPP
+                let msg = `*NOVO PEDIDO - CRIS PRADO*%0A%0A👤 *Cliente:* ${nome}%0A📍 *Endereço:* ${endereco}%0A🏠 *Obs:* ${obs}%0A----------------------------%0A`;
+                window.cart.forEach(i => msg += `• ${i.name}%0A`);
+                msg += `----------------------------%0A💰 *TOTAL: R$ ${window.total.toFixed(2)}*%0A💳 *Pagamento:* ${pagamento}`;
+                
+                window.open(`https://wa.me/5511999999999?text=${msg}`); // COLOQUE SEU NUMERO AQUI
+                location.reload();
+            } catch (e) {
+                alert("Erro ao salvar pedido!");
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
