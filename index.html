@@ -16,28 +16,35 @@
             background-image: url("https://www.transparenttextures.com/patterns/food.png");
             background-attachment: fixed;
         }
-        .sidebar { transition: 0.4s; transform: translateX(-100%); }
+        /* SIDEBAR NA DIREITA */
+        .sidebar { transition: 0.4s; transform: translateX(100%); }
         .sidebar.open { transform: translateX(0); }
         .product-img { width: 65px; height: 65px; object-fit: contain; }
     </style>
 </head>
 <body class="pb-32">
 
-    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[100] p-6">
+    <div id="sidebar" class="sidebar fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[100] p-6">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black text-red-600">MEUS PEDIDOS</h2>
+            <h2 class="text-2xl font-black text-red-600 uppercase">Status do Pedido</h2>
             <button onclick="toggleSidebar()" class="text-3xl">&times;</button>
         </div>
-        <input type="number" id="track-phone" placeholder="WhatsApp (só números)" class="w-full p-3 border-2 rounded-xl mb-3">
-        <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mb-6">Consultar</button>
+        <p class="text-xs text-gray-500 mb-3 font-bold">Consulte o andamento aqui:</p>
+        <input type="number" id="track-phone" placeholder="Seu WhatsApp (só números)" class="w-full p-3 border-2 rounded-xl mb-3 font-bold">
+        <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mb-6 shadow-lg active:scale-95 transition">CONSULTAR AGORA</button>
         <div id="status-result" class="space-y-3 overflow-y-auto max-h-[60vh]"></div>
     </div>
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[90] hidden"></div>
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[90] hidden backdrop-blur-sm"></div>
 
     <header class="bg-red-600 text-white p-10 text-center shadow-xl border-b-4 border-yellow-400 relative">
-        <button onclick="toggleSidebar()" class="absolute left-6 top-1/2 -translate-y-1/2 text-3xl">☰</button>
+        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center">
+            <span class="text-3xl">📋</span>
+            <span class="text-[10px] font-black uppercase tracking-tighter">Status</span>
+        </button>
+        
         <h1 class="text-6xl mb-2 italic text-yellow-100">Cris Prado</h1>
         <p class="slogan text-2xl text-yellow-200">O melhor hot dog da região!</p>
+        
         <div id="status-loja" class="mt-4 inline-flex items-center gap-2 bg-black/30 px-5 py-2 rounded-full font-bold text-sm text-white">
             <span id="status-dot" class="w-3 h-3 rounded-full"></span>
             <span id="status-text">Carregando...</span>
@@ -61,7 +68,7 @@
             <p class="text-[10px] font-black text-gray-400 uppercase">Seu Total</p>
             <span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span>
         </div>
-        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg active:scale-95 transition">Carrinho 🛒</button>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg active:scale-95 transition shadow-lg shadow-red-500/30">Finalizar 🛒</button>
     </div>
 
     <div id="modal-mayo" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[120] p-4">
@@ -80,20 +87,23 @@
 
     <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[110] p-4">
         <div class="bg-white w-full max-w-md p-8 rounded-[40px] max-h-[90vh] overflow-y-auto relative">
-            <button onclick="toggleCartModal()" class="absolute top-4 right-6 text-2xl font-bold">✕</button>
-            <h2 class="text-3xl font-black mb-6">Finalizar Pedido</h2>
-            <div id="cart-items" class="space-y-3 mb-6 border-b pb-6"></div>
+            <button onclick="toggleCartModal()" class="absolute top-4 right-6 text-2xl font-bold text-gray-300">✕</button>
+            <h2 class="text-3xl font-black mb-6">Seu Pedido</h2>
+            
+            <div id="cart-items" class="space-y-4 mb-6 border-b pb-6"></div>
+            
             <div class="space-y-4">
-                <input type="text" id="client-name" placeholder="Nome" class="w-full p-4 border-2 rounded-2xl font-bold">
-                <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border-2 rounded-2xl font-bold border-blue-200">
-                <input type="text" id="address" placeholder="Endereço e Número" class="w-full p-4 border-2 rounded-2xl font-bold">
-                <select id="payment" class="w-full p-4 border-2 rounded-2xl font-bold">
+                <input type="text" id="client-name" placeholder="Seu Nome" class="w-full p-4 border-2 rounded-2xl font-bold">
+                <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border-2 rounded-2xl font-bold border-blue-100">
+                <input type="text" id="address" placeholder="Endereço Completo" class="w-full p-4 border-2 rounded-2xl font-bold">
+                <select id="payment" class="w-full p-4 border-2 rounded-2xl font-bold bg-yellow-50">
                     <option value="Pix">Pix</option>
-                    <option value="Cartão">Cartão</option>
+                    <option value="Cartão">Cartão (Maquininha)</option>
                     <option value="Dinheiro">Dinheiro</option>
                 </select>
             </div>
-            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-xl mt-6">ENVIAR AGORA 📲</button>
+            
+            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-xl mt-6 shadow-xl active:scale-95 transition">ENVIAR NO WHATSAPP 📲</button>
         </div>
     </div>
 
@@ -128,6 +138,8 @@
             { n: "Coca lata 350ml", p: 6.00, img: "https://im.ge/i/coca-lata.png" },
             { n: "Coca 600ml", p: 8.00, img: "https://im.ge/i/coca-600ml.png" },
             { n: "Cotuba 600ml", p: 7.00, img: "https://im.ge/i/cotuba-600ml.png" },
+            { n: "Suco 500ml", p: 10.00, img: "https://im.ge/i/suco-laranja.png" },
+            { n: "Água com gás 500ml", p: 5.00, img: "https://im.ge/i/agua-gas.png" },
             { n: "Água sem gás 500ml", p: 4.00, img: "https://im.ge/i/agua-sem-gas.png" }
         ];
 
@@ -172,16 +184,21 @@
             const tel = document.getElementById('track-phone').value;
             const res = document.getElementById('status-result');
             if(!tel) return alert("Digite seu número!");
-            res.innerHTML = "Buscando...";
+            res.innerHTML = "<p class='text-center animate-pulse'>Buscando...</p>";
             
             const q = query(collection(db, "pedidos"), where("telefone", "==", tel));
             const snap = await getDocs(q);
             
-            if(snap.empty) { res.innerHTML = "Nenhum pedido encontrado."; return; }
+            if(snap.empty) { res.innerHTML = "<p class='text-center text-red-500 font-bold'>Pedido não encontrado.</p>"; return; }
             res.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                res.innerHTML += `<div class="bg-gray-50 p-4 rounded-2xl border"><b>#${doc.id.slice(-4)}</b> - <span class="uppercase text-red-600 font-black">${p.status}</span><br><small>${p.itens.length} itens</small></div>`;
+                const corStatus = p.status === 'pendente' ? 'text-yellow-600' : p.status === 'preparando' ? 'text-blue-600' : 'text-green-600';
+                res.innerHTML += `
+                    <div class="bg-gray-50 p-4 rounded-2xl border-l-4 border-red-500 shadow-sm">
+                        <div class="flex justify-between"><b>Pedido #${doc.id.slice(-4)}</b> <span class="font-black uppercase text-[10px] ${corStatus}">${p.status}</span></div>
+                        <p class="text-xs text-gray-500 mt-1">${p.itens.length} itens no total</p>
+                    </div>`;
             });
         };
 
@@ -194,7 +211,7 @@
                 window.total += (delta * price);
                 if(delta > 0) window.cart.push({id: Date.now(), name, price});
                 else { const idx = window.cart.findLastIndex(i => i.name.includes(name)); if(idx > -1) window.cart.splice(idx, 1); }
-                document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
+                updateDisplayTotal();
             }
         };
 
@@ -205,37 +222,80 @@
             window.cart.push({ id: Date.now(), name: `${tempItem.name} (${mayo})`, price: tempItem.price });
             window.total += tempItem.price;
             document.getElementById(`qty-${tempItem.name}`).innerText = parseInt(document.getElementById(`qty-${tempItem.name}`).innerText) + 1;
-            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
+            updateDisplayTotal();
             document.getElementById('modal-mayo').classList.add('hidden');
         };
 
+        function updateDisplayTotal() {
+            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
+        }
+
         window.toggleCartModal = () => {
-            const container = document.getElementById('cart-items');
-            container.innerHTML = window.cart.map(i => `<div class="flex justify-between text-sm font-bold"><span>${i.name}</span><span>R$ ${i.price.toFixed(2)}</span></div>`).join('');
+            renderCartList();
             document.getElementById('cart-modal').classList.toggle('hidden');
+        };
+
+        // RENDERIZAÇÃO DO CARRINHO COM LIXEIRA
+        function renderCartList() {
+            const container = document.getElementById('cart-items');
+            if(window.cart.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 py-6 font-bold">Seu carrinho está vazio 😕</p>`;
+                return;
+            }
+            container.innerHTML = window.cart.map(i => `
+                <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border">
+                    <div>
+                        <p class="font-black text-sm">${i.name}</p>
+                        <p class="text-green-600 font-bold text-xs">R$ ${i.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="removeFromCart(${i.id}, ${i.price}, '${i.name}')" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        window.removeFromCart = (id, price, fullName) => {
+            const idx = window.cart.findIndex(i => i.id === id);
+            if(idx > -1) {
+                window.cart.splice(idx, 1);
+                window.total -= price;
+                
+                // Diminuir o contador no menu principal
+                let baseName = hotDogs.find(d => fullName.includes(d.n))?.n || fullName;
+                const qtySpan = document.getElementById(`qty-${baseName}`);
+                if(qtySpan) qtySpan.innerText = Math.max(0, parseInt(qtySpan.innerText) - 1);
+                
+                updateDisplayTotal();
+                renderCartList();
+            }
         };
 
         window.checkStatus = () => {
             const hora = new Date().getHours();
             const dia = new Date().getDay();
             const aberto = (dia >= 2 && dia <= 6) && (hora >= 18 && hora < 23);
-            document.getElementById('status-dot').className = `w-3 h-3 rounded-full ${aberto ? 'bg-green-400' : 'bg-red-500'}`;
-            document.getElementById('status-text').innerText = aberto ? "ABERTO" : "FECHADO";
+            document.getElementById('status-dot').className = `w-3 h-3 rounded-full ${aberto ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`;
+            document.getElementById('status-text').innerText = aberto ? "ABERTO" : "FECHADO (Abre as 18h)";
         };
 
         window.finalizarPedido = async () => {
             const nome = document.getElementById('client-name').value;
             const tel = document.getElementById('client-phone').value;
             const end = document.getElementById('address').value;
-            if(!nome || !tel || !end || window.cart.length === 0) return alert("Preencha tudo!");
+            if(!nome || !tel || !end || window.cart.length === 0) return alert("Por favor, preencha todos os campos e adicione itens!");
 
-            await addDoc(collection(db, "pedidos"), {
-                cliente: nome, telefone: tel, endereco: end,
-                itens: window.cart, total: window.total,
-                status: "pendente", data: serverTimestamp()
-            });
-            window.open(`https://wa.me/5511999999999?text=Novo Pedido de ${nome}`); // Ajuste o número
-            location.reload();
+            try {
+                await addDoc(collection(db, "pedidos"), {
+                    cliente: nome, telefone: tel, endereco: end,
+                    itens: window.cart, total: window.total,
+                    status: "pendente", data: serverTimestamp()
+                });
+                
+                let textoZap = `*🌭 NOVO PEDIDO - CRIS PRADO*%0A👤 *Cliente:* ${nome}%0A📱 *WhatsApp:* ${tel}%0A📍 *Endereço:* ${end}%0A💰 *TOTAL: R$ ${window.total.toFixed(2)}*`;
+                window.open(`https://wa.me/5511999999999?text=${textoZap}`);
+                location.reload();
+            } catch (e) {
+                alert("Erro ao enviar pedido!");
+            }
         };
     </script>
 </body>
