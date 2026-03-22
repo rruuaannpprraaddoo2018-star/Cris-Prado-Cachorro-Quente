@@ -16,7 +16,6 @@
             background-image: url("https://www.transparenttextures.com/patterns/food.png");
             background-attachment: fixed;
         }
-        /* SIDEBAR NA DIREITA */
         .sidebar { transition: 0.4s; transform: translateX(100%); }
         .sidebar.open { transform: translateX(0); }
         .product-img { width: 65px; height: 65px; object-fit: contain; }
@@ -24,28 +23,47 @@
 </head>
 <body class="pb-32">
 
-    <div id="sidebar" class="sidebar fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[100] p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-black text-red-600 uppercase">Status do Pedido</h2>
-            <button onclick="toggleSidebar()" class="text-3xl">&times;</button>
+    <div id="sidebar" class="sidebar fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[100] p-6 flex flex-col">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-xl font-black text-red-600 uppercase">Menu</h2>
+            <button onclick="toggleSidebar()" class="text-3xl text-gray-400 hover:text-red-600">✕</button>
         </div>
-        <p class="text-xs text-gray-500 mb-3 font-bold">Consulte o andamento aqui:</p>
-        <input type="number" id="track-phone" placeholder="Seu WhatsApp (só números)" class="w-full p-3 border-2 rounded-xl mb-3 font-bold">
-        <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mb-6 shadow-lg active:scale-95 transition">CONSULTAR AGORA</button>
-        <div id="status-result" class="space-y-3 overflow-y-auto max-h-[60vh]"></div>
+        
+        <div class="flex-1 space-y-6">
+            <div class="bg-gray-50 p-5 rounded-[30px] border border-gray-100">
+                <h3 class="font-black mb-3 flex items-center gap-2">📋 Status do Pedido</h3>
+                <input type="number" id="track-phone" placeholder="Seu WhatsApp" class="w-full p-3 border-2 rounded-xl mb-3 text-sm">
+                <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition">CONSULTAR</button>
+                <div id="status-result" class="mt-4 space-y-2 overflow-y-auto max-h-40 text-sm"></div>
+            </div>
+
+            <div class="p-2">
+                <h3 class="font-black mb-4 flex items-center gap-2">📱 Siga-nos</h3>
+                <a href="https://www.instagram.com/cris_prado_cachorroquente?igsh=MXhyODZqYzM2anpkYQ==" target="_blank" class="flex items-center gap-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white p-4 rounded-2xl shadow-lg hover:scale-105 transition active:scale-95">
+                    <span class="text-2xl">📸</span>
+                    <span class="font-black">Instagram @cris_prado</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="text-[10px] text-center text-gray-400 font-bold uppercase tracking-widest">Cris Prado v2.0</p>
     </div>
+    
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[90] hidden backdrop-blur-sm"></div>
 
     <header class="bg-red-600 text-white p-10 text-center shadow-xl border-b-4 border-yellow-400 relative">
-        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center">
-            <span class="text-3xl">📋</span>
-            <span class="text-[10px] font-black uppercase tracking-tighter">Status</span>
+        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 text-4xl">
+            <div class="space-y-1.5">
+                <div class="w-8 h-1 bg-white rounded-full"></div>
+                <div class="w-8 h-1 bg-white rounded-full"></div>
+                <div class="w-8 h-1 bg-white rounded-full"></div>
+            </div>
         </button>
         
-        <h1 class="text-6xl mb-2 italic text-yellow-100">Cris Prado</h1>
+        <h1 class="text-6xl mb-2 italic text-yellow-100 drop-shadow-lg">Cris Prado</h1>
         <p class="slogan text-2xl text-yellow-200">O melhor hot dog da região!</p>
         
-        <div id="status-loja" class="mt-4 inline-flex items-center gap-2 bg-black/30 px-5 py-2 rounded-full font-bold text-sm text-white">
+        <div id="status-loja" class="mt-4 inline-flex items-center gap-2 bg-black/30 px-5 py-2 rounded-full font-bold text-sm">
             <span id="status-dot" class="w-3 h-3 rounded-full"></span>
             <span id="status-text">Carregando...</span>
         </div>
@@ -65,52 +83,56 @@
 
     <div class="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.1)] z-50 rounded-t-[32px]">
         <div>
-            <p class="text-[10px] font-black text-gray-400 uppercase">Seu Total</p>
+            <p class="text-[10px] font-black text-gray-400 uppercase">Subtotal</p>
             <span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span>
         </div>
-        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg active:scale-95 transition shadow-lg shadow-red-500/30">Finalizar 🛒</button>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg active:scale-95 transition shadow-lg shadow-red-500/30 uppercase">Finalizar 🛒</button>
     </div>
 
-    <div id="modal-mayo" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[120] p-4">
-        <div class="bg-white w-full max-w-sm p-8 rounded-[40px] relative">
-            <h3 id="modal-item-name" class="text-2xl font-black text-red-600 mb-4 italic">Maionese</h3>
-            <p class="font-bold mb-4">Escolha sua Maionese:</p>
-            <select id="mayo-select" class="w-full p-4 border-2 rounded-2xl font-bold mb-6 bg-gray-50">
+    <div id="modal-mayo" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[120] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm p-8 rounded-[40px] relative shadow-2xl">
+            <button onclick="document.getElementById('modal-mayo').classList.add('hidden')" class="absolute top-6 left-6 text-gray-400 text-sm font-bold flex items-center gap-1">← Voltar</button>
+            
+            <h3 id="modal-item-name" class="text-3xl font-black text-red-600 mb-4 mt-4 italic text-center">Maionese</h3>
+            <p class="font-bold text-center mb-6 text-gray-600">Escolha o sabor especial:</p>
+            
+            <select id="mayo-select" class="w-full p-5 border-2 border-gray-100 rounded-2xl font-bold mb-8 bg-gray-50 outline-none focus:border-red-500 transition">
                 <option value="Maionese Verde">Maionese Verde (Casa)</option>
                 <option value="Maionese de Bacon">Maionese de Bacon</option>
                 <option value="Cebola Caramelizada">Cebola Caramelizada</option>
                 <option value="Sem Maionese">Sem Maionese</option>
             </select>
-            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black text-xl">Confirmar</button>
+            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition">ADICIONAR ✅</button>
         </div>
     </div>
 
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[110] p-4">
-        <div class="bg-white w-full max-w-md p-8 rounded-[40px] max-h-[90vh] overflow-y-auto relative">
-            <button onclick="toggleCartModal()" class="absolute top-4 right-6 text-2xl font-bold text-gray-300">✕</button>
-            <h2 class="text-3xl font-black mb-6">Seu Pedido</h2>
+    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md p-8 rounded-[40px] max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <button onclick="toggleCartModal()" class="absolute top-6 right-8 text-2xl font-bold text-gray-300">✕</button>
+            <h2 class="text-3xl font-black mb-6 flex items-center gap-2">🛒 Seu Pedido</h2>
             
             <div id="cart-items" class="space-y-4 mb-6 border-b pb-6"></div>
             
             <div class="space-y-4">
-                <input type="text" id="client-name" placeholder="Seu Nome" class="w-full p-4 border-2 rounded-2xl font-bold">
-                <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border-2 rounded-2xl font-bold border-blue-100">
-                <input type="text" id="address" placeholder="Endereço Completo" class="w-full p-4 border-2 rounded-2xl font-bold">
-                <select id="payment" class="w-full p-4 border-2 rounded-2xl font-bold bg-yellow-50">
-                    <option value="Pix">Pix</option>
-                    <option value="Cartão">Cartão (Maquininha)</option>
-                    <option value="Dinheiro">Dinheiro</option>
+                <input type="text" id="client-name" placeholder="Nome Completo" class="w-full p-4 border-2 rounded-2xl font-bold bg-gray-50 outline-none focus:border-red-500">
+                <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border-2 rounded-2xl font-bold bg-gray-50 border-blue-100 outline-none focus:border-blue-500">
+                <input type="text" id="address" placeholder="Endereço para Entrega" class="w-full p-4 border-2 rounded-2xl font-bold bg-gray-50 outline-none focus:border-red-500">
+                <select id="payment" class="w-full p-4 border-2 rounded-2xl font-bold bg-yellow-50 outline-none">
+                    <option value="Pix">💳 Pix (Chave no WhatsApp)</option>
+                    <option value="Cartão">📟 Cartão (Maquininha)</option>
+                    <option value="Dinheiro">💵 Dinheiro</option>
                 </select>
             </div>
             
-            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-xl mt-6 shadow-xl active:scale-95 transition">ENVIAR NO WHATSAPP 📲</button>
+            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-xl mt-8 shadow-xl active:scale-95 transition">ENVIAR PEDIDO 📲</button>
+            <p class="text-center text-[10px] text-gray-400 font-bold mt-4 uppercase">Você será redirecionado para o WhatsApp</p>
         </div>
     </div>
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFqUjWp4fBd_wl75uMmaGjRfJDS85FLe4",
@@ -127,9 +149,7 @@
         window.total = 0;
         let tempItem = null;
 
-        const hotDogs = [
-            { n: "Carne", p: 14.90 }, { n: "Frango", p: 14.90 }, { n: "Misto", p: 14.90 }
-        ];
+        const hotDogs = [{ n: "Carne", p: 14.90 }, { n: "Frango", p: 14.90 }, { n: "Misto", p: 14.90 }];
 
         const bebidas = [
             { n: "Coca-Cola 2L", p: 15.00, img: "https://im.ge/i/coca-2l.png" },
@@ -143,15 +163,11 @@
             { n: "Água sem gás 500ml", p: 4.00, img: "https://im.ge/i/agua-sem-gas.png" }
         ];
 
-        window.onload = () => {
-            AOS.init({ duration: 800 });
-            renderMenu();
-            checkStatus();
-        };
+        window.onload = () => { AOS.init({ duration: 800 }); renderMenu(); checkStatus(); };
 
         function renderMenu() {
             document.getElementById('lista-dogs').innerHTML = hotDogs.map(d => `
-                <div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border">
+                <div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
                     <div class="flex-1"><h3 class="font-black text-xl">${d.n}</h3><p class="text-green-600 font-black">R$ ${d.p.toFixed(2)}</p></div>
                     <div class="flex items-center gap-4 bg-gray-100 p-2 rounded-2xl">
                         <button onclick="changeQty('${d.n}', ${d.p}, -1)" class="w-10 h-10 bg-white rounded-xl shadow font-bold text-red-500 text-xl">-</button>
@@ -162,7 +178,7 @@
             `).join('');
 
             document.getElementById('lista-bebidas').innerHTML = bebidas.map(b => `
-                <div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border">
+                <div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
                     <div class="flex-1"><h3 class="font-black text-lg">${b.n}</h3><p class="text-green-600 font-black">R$ ${b.p.toFixed(2)}</p>
                         <div class="flex items-center gap-3 bg-gray-100 p-1 w-fit rounded-xl mt-2">
                             <button onclick="changeQty('${b.n}', ${b.p}, -1)" class="w-8 h-8 bg-white rounded shadow text-red-500 font-bold">-</button>
@@ -184,21 +200,14 @@
             const tel = document.getElementById('track-phone').value;
             const res = document.getElementById('status-result');
             if(!tel) return alert("Digite seu número!");
-            res.innerHTML = "<p class='text-center animate-pulse'>Buscando...</p>";
-            
+            res.innerHTML = "Buscando...";
             const q = query(collection(db, "pedidos"), where("telefone", "==", tel));
             const snap = await getDocs(q);
-            
-            if(snap.empty) { res.innerHTML = "<p class='text-center text-red-500 font-bold'>Pedido não encontrado.</p>"; return; }
+            if(snap.empty) { res.innerHTML = "Nenhum pedido encontrado."; return; }
             res.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
-                const corStatus = p.status === 'pendente' ? 'text-yellow-600' : p.status === 'preparando' ? 'text-blue-600' : 'text-green-600';
-                res.innerHTML += `
-                    <div class="bg-gray-50 p-4 rounded-2xl border-l-4 border-red-500 shadow-sm">
-                        <div class="flex justify-between"><b>Pedido #${doc.id.slice(-4)}</b> <span class="font-black uppercase text-[10px] ${corStatus}">${p.status}</span></div>
-                        <p class="text-xs text-gray-500 mt-1">${p.itens.length} itens no total</p>
-                    </div>`;
+                res.innerHTML += `<div class="bg-white p-3 rounded-xl border-2 mb-2"><b>#${doc.id.slice(-4)}</b> - <span class="font-black text-red-600 uppercase text-[10px]">${p.status}</span></div>`;
             });
         };
 
@@ -211,7 +220,7 @@
                 window.total += (delta * price);
                 if(delta > 0) window.cart.push({id: Date.now(), name, price});
                 else { const idx = window.cart.findLastIndex(i => i.name.includes(name)); if(idx > -1) window.cart.splice(idx, 1); }
-                updateDisplayTotal();
+                document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
             }
         };
 
@@ -222,50 +231,34 @@
             window.cart.push({ id: Date.now(), name: `${tempItem.name} (${mayo})`, price: tempItem.price });
             window.total += tempItem.price;
             document.getElementById(`qty-${tempItem.name}`).innerText = parseInt(document.getElementById(`qty-${tempItem.name}`).innerText) + 1;
-            updateDisplayTotal();
+            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
             document.getElementById('modal-mayo').classList.add('hidden');
         };
 
-        function updateDisplayTotal() {
-            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
-        }
-
         window.toggleCartModal = () => {
-            renderCartList();
+            const container = document.getElementById('cart-items');
+            if(window.cart.length === 0) { container.innerHTML = `<p class="text-center text-gray-400 py-6 font-bold">Carrinho vazio</p>`; }
+            else {
+                container.innerHTML = window.cart.map(i => `
+                    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border">
+                        <div><p class="font-black text-sm">${i.name}</p><p class="text-green-600 font-bold text-xs">R$ ${i.price.toFixed(2)}</p></div>
+                        <button onclick="removeFromCart(${i.id}, ${i.price}, '${i.name}')" class="p-2 text-red-500">🗑️</button>
+                    </div>
+                `).join('');
+            }
             document.getElementById('cart-modal').classList.toggle('hidden');
         };
-
-        // RENDERIZAÇÃO DO CARRINHO COM LIXEIRA
-        function renderCartList() {
-            const container = document.getElementById('cart-items');
-            if(window.cart.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-400 py-6 font-bold">Seu carrinho está vazio 😕</p>`;
-                return;
-            }
-            container.innerHTML = window.cart.map(i => `
-                <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border">
-                    <div>
-                        <p class="font-black text-sm">${i.name}</p>
-                        <p class="text-green-600 font-bold text-xs">R$ ${i.price.toFixed(2)}</p>
-                    </div>
-                    <button onclick="removeFromCart(${i.id}, ${i.price}, '${i.name}')" class="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition">🗑️</button>
-                </div>
-            `).join('');
-        }
 
         window.removeFromCart = (id, price, fullName) => {
             const idx = window.cart.findIndex(i => i.id === id);
             if(idx > -1) {
                 window.cart.splice(idx, 1);
                 window.total -= price;
-                
-                // Diminuir o contador no menu principal
                 let baseName = hotDogs.find(d => fullName.includes(d.n))?.n || fullName;
                 const qtySpan = document.getElementById(`qty-${baseName}`);
                 if(qtySpan) qtySpan.innerText = Math.max(0, parseInt(qtySpan.innerText) - 1);
-                
-                updateDisplayTotal();
-                renderCartList();
+                document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
+                window.toggleCartModal(); window.toggleCartModal(); // Refresh
             }
         };
 
@@ -274,28 +267,19 @@
             const dia = new Date().getDay();
             const aberto = (dia >= 2 && dia <= 6) && (hora >= 18 && hora < 23);
             document.getElementById('status-dot').className = `w-3 h-3 rounded-full ${aberto ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`;
-            document.getElementById('status-text').innerText = aberto ? "ABERTO" : "FECHADO (Abre as 18h)";
+            document.getElementById('status-text').innerText = aberto ? "ABERTO" : "FECHADO";
         };
 
         window.finalizarPedido = async () => {
             const nome = document.getElementById('client-name').value;
             const tel = document.getElementById('client-phone').value;
             const end = document.getElementById('address').value;
-            if(!nome || !tel || !end || window.cart.length === 0) return alert("Por favor, preencha todos os campos e adicione itens!");
-
-            try {
-                await addDoc(collection(db, "pedidos"), {
-                    cliente: nome, telefone: tel, endereco: end,
-                    itens: window.cart, total: window.total,
-                    status: "pendente", data: serverTimestamp()
-                });
-                
-                let textoZap = `*🌭 NOVO PEDIDO - CRIS PRADO*%0A👤 *Cliente:* ${nome}%0A📱 *WhatsApp:* ${tel}%0A📍 *Endereço:* ${end}%0A💰 *TOTAL: R$ ${window.total.toFixed(2)}*`;
-                window.open(`https://wa.me/5511999999999?text=${textoZap}`);
-                location.reload();
-            } catch (e) {
-                alert("Erro ao enviar pedido!");
-            }
+            if(!nome || !tel || !end || window.cart.length === 0) return alert("Preencha os dados corretamente!");
+            await addDoc(collection(db, "pedidos"), {
+                cliente: nome, telefone: tel, endereco: end, itens: window.cart, total: window.total, status: "pendente", data: serverTimestamp()
+            });
+            window.open(`https://wa.me/5511999999999?text=Pedido de ${nome} no valor de R$ ${window.total.toFixed(2)}`);
+            location.reload();
         };
     </script>
 </body>
