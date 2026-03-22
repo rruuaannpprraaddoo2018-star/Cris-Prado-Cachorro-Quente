@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cris Prado Cachorro Quente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        h1 { font-family: 'Bangers', cursive; letter-spacing: 2px; }
+        .slogan { font-family: 'Pacifico', cursive; }
+        body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 pb-32">
+
+    <header class="bg-red-600 text-white p-8 text-center shadow-xl border-b-4 border-yellow-400">
+        <h1 class="text-5xl mb-2 italic text-yellow-100">Cris Prado</h1>
+        <p class="slogan text-xl text-yellow-200">O melhor hot dog da região!</p>
+        <div class="mt-4 inline-block bg-yellow-400 text-red-700 px-4 py-1 rounded-full font-bold text-sm shadow-md">
+            🕒 Entrega: 30 - 50 min
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto p-4 space-y-8">
+        
+        <section>
+            <h2 class="text-2xl font-bold mb-4 text-red-700 border-b-2 border-red-200 flex items-center gap-2">
+                <span>🌭</span> Cachorro Quente Tradicional
+            </h2>
+            
+            <div id="lanches-container" class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg text-gray-800">Carne</h3>
+                            <p class="text-xs text-gray-500 mb-2">Pão, salsicha, carne moída, batata palha.</p>
+                            <span class="text-green-600 font-bold text-lg">R$ 14,90</span>
+                        </div>
+                        <button onclick="openCustomization('Carne', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl shadow-lg active:scale-90 transition-transform">+</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg text-gray-800">Frango</h3>
+                            <p class="text-xs text-gray-500 mb-2">Pão, salsicha, frango desfiado, batata palha.</p>
+                            <span class="text-green-600 font-bold text-lg">R$ 14,90</span>
+                        </div>
+                        <button onclick="openCustomization('Frango', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl shadow-lg active:scale-90 transition-transform">+</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-red-500">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg text-gray-800">Misto</h3>
+                            <p class="text-xs text-gray-500 mb-2">Pão, salsicha, carne, frango, batata palha.</p>
+                            <span class="text-green-600 font-bold text-lg">R$ 14,90</span>
+                        </div>
+                        <button onclick="openCustomization('Misto', 14.90)" class="bg-red-500 text-white w-12 h-12 rounded-xl font-bold text-2xl shadow-lg active:scale-90 transition-transform">+</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-bold mb-4 text-red-700 border-b-2 border-red-200 flex items-center gap-2">
+                <span>🥤</span> Bebidas Geladinhas
+            </h2>
+            <div id="bebidas-container" class="space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-blue-500 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-gray-800">Coca-Cola Lata</h3>
+                        <span class="text-green-600 font-bold">R$ 6,00</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-100 p-1 rounded-lg">
+                        <button onclick="changeQty('Coca-Cola Lata', 6.00, -1)" class="bg-white w-8 h-8 rounded shadow text-red-600 font-bold">-</button>
+                        <span id="qty-Coca-Cola Lata" class="font-bold w-4 text-center text-gray-700">0</span>
+                        <button onclick="changeQty('Coca-Cola Lata', 6.00, 1)" class="bg-white w-8 h-8 rounded shadow text-green-600 font-bold">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-4 border-blue-500 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-gray-800">Guaraná Antarctica</h3>
+                        <span class="text-green-600 font-bold">R$ 5,50</span>
+                    </div>
+                    <div class="flex items-center gap-3 bg-gray-100 p-1 rounded-lg">
+                        <button onclick="changeQty('Guaraná Antarctica', 5.50, -1)" class="bg-white w-8 h-8 rounded shadow text-red-600 font-bold">-</button>
+                        <span id="qty-Guaraná Antarctica" class="font-bold w-4 text-center text-gray-700">0</span>
+                        <button onclick="changeQty('Guaraná Antarctica', 5.50, 1)" class="bg-white w-8 h-8 rounded shadow text-green-600 font-bold">+</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal-mayo" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+            <h3 id="modal-item-name" class="text-2xl font-black mb-4 text-red-600 uppercase italic">Personalizar</h3>
+            <p class="font-bold mb-3 text-gray-600">Deseja Maionese?</p>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <label class="flex flex-col items-center justify-center p-3 rounded-2xl border-2 cursor-pointer has-[:checked]:bg-red-50 has-[:checked]:border-red-500">
+                    <input type="radio" name="mayo-choice" value="nao" class="hidden" onclick="toggleMayoFlavors(false)" checked> 
+                    <span class="text-2xl mb-1">❌</span>
+                    <span class="text-sm font-bold">NÃO</span>
+                </label>
+                <label class="flex flex-col items-center justify-center p-3 rounded-2xl border-2 cursor-pointer has-[:checked]:bg-green-50 has-[:checked]:border-green-500">
+                    <input type="radio" name="mayo-choice" value="sim" class="hidden" onclick="toggleMayoFlavors(true)">
+                    <span class="text-2xl mb-1">✅</span>
+                    <span class="text-sm font-bold">SIM</span>
+                </label>
+            </div>
+            <div id="mayo-flavors" class="hidden space-y-2 mb-6">
+                <p class="font-bold mb-2 text-gray-600">Sabor da maionese:</p>
+                <select id="mayo-select" class="w-full p-4 border-2 border-yellow-400 rounded-xl bg-yellow-50 font-bold outline-none">
+                    <option value="Maionese Verde">Maionese Verde</option>
+                    <option value="Maionese de Bacon">Maionese de Bacon</option>
+                    <option value="Cebola Caramelizada">Cebola Caramelizada</option>
+                </select>
+            </div>
+            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold text-xl shadow-lg active:scale-95 transition-transform">Adicionar ao Pedido</button>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-between items-center shadow-[0_-5px_15px_rgba(0,0,0,0.1)] z-40">
+        <div>
+            <p class="text-xs text-gray-400 font-bold">TOTAL DO PEDIDO</p>
+            <span class="text-3xl font-black text-red-600 leading-none">R$ <span id="total-price">0,00</span></span>
+        </div>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg text-lg active:scale-95 transition-transform">Ver Carrinho</button>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Seu Carrinho</h2>
+                <button onclick="toggleCartModal()" class="text-gray-400 text-3xl font-light">&times;</button>
+            </div>
+            
+            <div id="cart-items" class="space-y-3 mb-6 border-b pb-4"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Seu Nome</label>
+                    <input type="text" id="client-name" class="w-full p-3 border-2 rounded-xl focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Endereço (Rua, Número, Bairro)</label>
+                    <input type="text" id="address" class="w-full p-3 border-2 rounded-xl focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase text-blue-500">Ponto de Referência / Obs (Ex: Casa azul, interfone 2)</label>
+                    <textarea id="obs" class="w-full p-3 border-2 rounded-xl focus:border-blue-500 outline-none bg-blue-50" rows="2"></textarea>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 uppercase">Forma de Pagamento</label>
+                    <select id="payment" class="w-full p-3 border-2 rounded-xl bg-gray-50 outline-none font-bold">
+                        <option value="Cartão (Levar Máquina)">Cartão (Levar Máquina)</option>
+                        <option value="Dinheiro (Vou precisar de troco)">Dinheiro (Vou precisar de troco)</option>
+                        <option value="Pix">Pix</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-3 rounded-xl mt-4 text-center">
+                <p class="text-xs font-bold text-yellow-700">Estimativa de entrega: <span class="text-sm">30 - 50 minutos</span></p>
+            </div>
+
+            <button onclick="sendWhatsApp()" class="w-full bg-green-500 text-white py-4 rounded-2xl font-black text-xl mt-6 shadow-xl hover:bg-green-600 transition-colors">
+                ENVIAR PEDIDO 📲
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let total = 0;
+        let tempItem = null;
+        let drinkQtys = {};
+
+        function openCustomization(name, price) {
+            tempItem = { name, price };
+            document.getElementById('modal-item-name').innerText = name;
+            document.getElementById('modal-mayo').classList.remove('hidden');
+        }
+
+        function toggleMayoFlavors(show) {
+            document.getElementById('mayo-flavors').classList.toggle('hidden', !show);
+        }
+
+        function confirmLanche() {
+            const hasMayo = document.querySelector('input[name="mayo-choice"]:checked').value === 'sim';
+            const mayoSabor = hasMayo ? document.getElementById('mayo-select').value : 'SEM MAIONESE';
+            const finalItem = { name: `${tempItem.name} (${mayoSabor})`, price: tempItem.price };
+            cart.push(finalItem);
+            total += finalItem.price;
+            updateDisplay();
+            document.getElementById('modal-mayo').classList.add('hidden');
+        }
+
+        function changeQty(name, price, delta) {
+            if (!drinkQtys[name]) drinkQtys[name] = 0;
+            const oldQty = drinkQtys[name];
+            drinkQtys[name] = Math.max(0, drinkQtys[name] + delta);
+            if (drinkQtys[name] !== oldQty) {
+                total += (drinkQtys[name] - oldQty) * price;
+                if (delta > 0) cart.push({name, price});
+                else { const idx = cart.findLastIndex(i => i.name === name); if (idx > -1) cart.splice(idx, 1); }
+            }
+            document.getElementById(`qty-${name}`).innerText = drinkQtys[name];
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('total-price').innerText = total.toFixed(2).replace('.', ',');
+            const container = document.getElementById('cart-items');
+            container.innerHTML = cart.length === 0 ? `<p class='text-center py-4'>Vazio...</p>` : 
+            cart.map(item => `<div class='flex justify-between bg-gray-50 p-2 rounded-lg text-sm'><span>${item.name}</span><b>R$ ${item.price.toFixed(2)}</b></div>`).join('');
+        }
+
+        function toggleCartModal() {
+            if (cart.length === 0) return alert("Seu carrinho está vazio!");
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
+
+        function sendWhatsApp() {
+            const name = document.getElementById('client-name').value;
+            const addr = document.getElementById('address').value;
+            const obs = document.getElementById('obs').value;
+            const pay = document.getElementById('payment').value;
+
+            if(!name || !addr) return alert("Nome e Endereço são obrigatórios!");
+
+            let msg = `*PEDIDO - CRIS PRADO*%0A%0A`;
+            msg += `👤 *Cliente:* ${name}%0A`;
+            msg += `📍 *Endereço:* ${addr}%0A`;
+            if(obs) msg += `🏠 *Obs/Ref:* ${obs}%0A`;
+            msg += `💳 *Pagamento:* ${pay}%0A`;
+            msg += `----------------------------%0A`;
+            const resumo = {};
+            cart.forEach(i => resumo[i.name] = (resumo[i.name] || 0) + 1);
+            for(let item in resumo) msg += `${resumo[item]}x ${item}%0A`;
+            msg += `----------------------------%0A`;
+            msg += `💰 *TOTAL: R$ ${total.toFixed(2)}*%0A`;
+            msg += `🕒 *Tempo estimado:* 30-50 min`;
+
+            const fone = "17992110457"; // SUBSTITUA PELO SEU NÚMERO
+            window.open(`https://wa.me/${fone}?text=${msg}`);
+        }
+    </script>
+</body>
+</html>
