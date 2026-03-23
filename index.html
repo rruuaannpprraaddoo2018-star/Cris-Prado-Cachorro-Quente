@@ -175,13 +175,10 @@
         const hotDogs = [{ n: "Carne", p: 14.90 }, { n: "Frango", p: 14.90 }, { n: "Misto", p: 14.90 }];
         const bebidas = [
             { n: "Coca-Cola 2L", p: 15.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/coca_coca_2l_pack_8_1_1_2380938e61e93125191ebc11919fc1d7.png" },
-            { n: "Roller 2L", p: 10.00, img: "https://www.bebidaspoty.com.br/wp-content/uploads/2025/07/img-roller-2l.png
-" },
-            { n: "Cotuba 2L", p: 12.00, img: "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSFp7W95rH80p2bBrZchb5Rt6bLEZ6vuX4l-bhm0qauPtLtRlQct23HB1k2vJjtKjkmgJbESf1x1DnkFAogw9CCW8zuzPY9zCE_HN8bU30cUTB2O0eUd1hD7dw" },
-            { n: "Coca lata 350ml", p: 6.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_350_ml_cx_153_1_69e0d310d5c2eee2f2d02c687ce191b0.png
-" },
-            { n: "Coca 600ml", p: 8.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_600_ml_cx_237_1_a6460d428f2f32c9e828220a8f4c3c83.png
-" },
+            { n: "Roller 2L", p: 10.00, img: "https://www.bebidaspoty.com.br/wp-content/uploads/2021/07/img-roller-2l.png" },
+            { n: "Cotuba 2L", p: 12.00, img: "https://ibassets.com.br/ib.item.image.large/l-bc173557e53f47e3848130883d69287d.jpeg" },
+            { n: "Coca lata 350ml", p: 6.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_350_ml_cx_153_1_69e0d310d5c2eee2f2d02c687ce191b0.png" },
+            { n: "Coca 600ml", p: 8.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_600_ml_cx_237_1_a6460d428f2f32c9e828220a8f4c3c83.png" },
             { n: "Cotuba 600ml", p: 7.00, img: "https://ibassets.com.br/ib.item.image.large/l-4bb20c3b544647bb89de2b7ac8a29290.jpeg" },
             { n: "Suco 500ml", p: 10.00, img: "https://app.cardapiodigital.net/tabuadecarne/1307-large_default/suco-laranja-500ml.jpg" },
             { n: "Água com gás 500ml", p: 5.00, img: "https://andinacocacola.vtexassets.com/arquivos/ids/157851/113326_COCA---Crystal500ml-ComGas.jpg?v=638412001213470000" },
@@ -219,7 +216,7 @@
                             <button onclick="changeQty('${b.n}', ${b.p}, 1)" class="w-8 h-8 bg-white rounded shadow text-green-600 font-bold">+</button>
                         </div>
                     </div>
-                    <img src="${b.img}" class="product-img ml-2">
+                    <img src="${b.img}" class="product-img ml-2" onerror="this.src='https://placehold.co/100x100?text=Bebida'">
                 </div>`).join('');
         }
 
