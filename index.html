@@ -31,12 +31,7 @@
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[90] hidden backdrop-blur-sm"></div>
 
     <header class="bg-red-600 text-white p-10 text-center shadow-xl border-b-4 border-yellow-400 relative">
-        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-1.5 p-2 hover:bg-white/10 rounded-lg transition-all">
-            <div class="w-8 h-1 bg-white rounded-full"></div>
-            <div class="w-8 h-1 bg-white rounded-full"></div>
-            <div class="w-8 h-1 bg-white rounded-full"></div>
-        </button>
-        
+        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-xl text-xs font-bold uppercase">Status</button>
         <h1 class="text-6xl italic text-yellow-100 drop-shadow-lg">Cris Prado</h1>
         <p class="slogan text-2xl text-yellow-200">O melhor hot dog da região!</p>
     </header>
@@ -53,10 +48,7 @@
     </main>
 
     <div class="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-2xl z-50 rounded-t-[32px]">
-        <div>
-            <p class="text-[10px] font-black text-gray-400 uppercase">Total</p>
-            <span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span>
-        </div>
+        <div><p class="text-[10px] font-black text-gray-400 uppercase">Total</p><span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span></div>
         <button onclick="toggleCartModal()" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-lg uppercase shadow-lg">Finalizar</button>
     </div>
 
@@ -85,7 +77,7 @@
             <input type="number" id="client-phone" placeholder="WhatsApp" class="w-full p-4 border rounded-xl mb-3 font-bold">
             <input type="text" id="address" placeholder="Endereço (Rua, Nº, Bairro)" class="w-full p-4 border rounded-xl mb-3 font-bold">
             <select id="payment" class="w-full p-4 border rounded-xl mb-6 font-bold">
-                <option value="Pix">Pix (Chave: 17992110457)</option>
+                <option value="Pix">Pix (17992110457)</option>
                 <option value="Cartão">Cartão (Maquininha)</option>
                 <option value="Dinheiro">Dinheiro</option>
             </select>
@@ -129,147 +121,41 @@
         window.onload = () => { renderMenu(); };
 
         function renderMenu() {
-            // Render Dogs
-            document.getElementById('lista-dogs').innerHTML = hotDogs.map(d => `
-                <div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
-                    <div class="flex-1">
-                        <h3 class="font-black text-xl">${d.n}</h3>
-                        <p class="text-green-600 font-black">R$ ${d.p.toFixed(2)}</p>
-                    </div>
-                    <button onclick="openCustomization('${d.n}', ${d.p})" class="w-12 h-12 bg-red-600 text-white rounded-2xl font-black text-2xl active:scale-90 transition-all">+</button>
-                </div>
-            `).join('');
-
-            // Render Bebidas com mesmo sistema de botão
-            document.getElementById('lista-bebidas').innerHTML = bebidas.map(b => `
-                <div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
-                    <div class="flex-1">
-                        <h3 class="font-black text-lg">${b.n}</h3>
-                        <p class="text-green-600 font-black">R$ ${b.p.toFixed(2)}</p>
-                        <button onclick="addToCart('${b.n}', ${b.p})" class="mt-2 bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-black uppercase active:scale-90 transition-all">Adicionar +</button>
-                    </div>
-                    <img src="${b.img}" class="product-img" onerror="this.src='https://placehold.co/100x100?text=Bebida'">
-                </div>
-            `).join('');
+            document.getElementById('lista-dogs').innerHTML = hotDogs.map(d => `<div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50"><div class="flex-1"><h3 class="font-black text-xl">${d.n}</h3><p class="text-green-600 font-black">R$ ${d.p.toFixed(2)}</p></div><button onclick="openCustomization('${d.n}', ${d.p})" class="w-12 h-12 bg-red-600 text-white rounded-2xl font-black text-2xl">+</button></div>`).join('');
+            document.getElementById('lista-bebidas').innerHTML = bebidas.map(b => `<div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50"><div class="flex-1"><h3 class="font-black text-lg">${b.n}</h3><p class="text-green-600 font-black">R$ ${b.p.toFixed(2)}</p><button onclick="addToCart('${b.n}', ${b.p})" class="mt-2 bg-blue-600 text-white px-4 py-1 rounded-xl text-xs font-bold uppercase">Pedir</button></div><img src="${b.img}" class="product-img" onerror="this.src='https://placehold.co/100x100?text=Bebida'"></div>`).join('');
         }
 
-        window.toggleSidebar = () => { 
-            document.getElementById('sidebar').classList.toggle('open'); 
-            document.getElementById('overlay').classList.toggle('hidden'); 
-        };
-
-        window.setMetodo = (m) => { 
-            window.metodo = m; 
-            document.getElementById('address').style.display = m === 'entrega' ? 'block' : 'none';
-            document.getElementById('btn-entrega').classList.toggle('border-red-600', m === 'entrega');
-            document.getElementById('btn-entrega').classList.toggle('text-red-600', m === 'entrega');
-            document.getElementById('btn-retirada').classList.toggle('border-red-600', m === 'retirada');
-            document.getElementById('btn-retirada').classList.toggle('text-red-600', m === 'retirada');
-        };
-
-        window.openCustomization = (name, price) => { 
-            tempItem = { name, price }; 
-            document.getElementById('modal-mayo').classList.remove('hidden'); 
-        };
-
-        window.confirmLanche = () => { 
-            const mayo = document.getElementById('mayo-select').value; 
-            addToCart(`${tempItem.name} (${mayo})`, tempItem.price); 
-            document.getElementById('modal-mayo').classList.add('hidden'); 
-        };
-
-        window.addToCart = (name, price) => { 
-            window.cart.push({name, price}); 
-            window.total += price; 
-            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ','); 
-        };
-
-        window.toggleCartModal = () => { 
-            document.getElementById('cart-items').innerHTML = window.cart.map((i, index) => `
-                <div class="flex justify-between items-center font-bold text-sm bg-gray-50 p-2 rounded-lg">
-                    <span>${i.name}</span>
-                    <div class="flex items-center gap-3">
-                        <span>R$ ${i.price.toFixed(2)}</span>
-                        <button onclick="removeItem(${index})" class="text-red-500 text-xs">Remover</button>
-                    </div>
-                </div>
-            `).join(''); 
-            document.getElementById('cart-modal').classList.toggle('hidden'); 
-        };
-
-        window.removeItem = (index) => {
-            window.total -= window.cart[index].price;
-            window.cart.splice(index, 1);
-            document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ',');
-            toggleCartModal(); // Refresh modal
-        };
+        window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden'); };
+        window.setMetodo = (m) => { window.metodo = m; document.getElementById('address').style.display = m === 'entrega' ? 'block' : 'none'; };
+        window.openCustomization = (name, price) => { tempItem = { name, price }; document.getElementById('modal-mayo').classList.remove('hidden'); };
+        window.confirmLanche = () => { const mayo = document.getElementById('mayo-select').value; addToCart(`${tempItem.name} (${mayo})`, tempItem.price); document.getElementById('modal-mayo').classList.add('hidden'); };
+        window.addToCart = (name, price) => { window.cart.push({name, price}); window.total += price; document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ','); };
+        window.toggleCartModal = () => { document.getElementById('cart-items').innerHTML = window.cart.map(i => `<div class="flex justify-between font-bold text-sm"><span>${i.name}</span><span>R$ ${i.price.toFixed(2)}</span></div>`).join(''); document.getElementById('cart-modal').classList.toggle('hidden'); };
 
         window.finalizarPedido = async () => {
             const nome = document.getElementById('client-name').value;
             const tel = document.getElementById('client-phone').value;
             const end = document.getElementById('address').value;
-            
-            if(!nome || !tel || window.cart.length === 0) return alert("Preencha os campos obrigatórios!");
-            
-            const totalFinal = window.metodo === 'entrega' ? window.total + 2 : window.total;
-            
-            try {
-                await addDoc(collection(db, "pedidos"), { 
-                    cliente: nome, 
-                    telefone: tel, 
-                    endereco: window.metodo === 'entrega' ? end : 'Retirada na Loja', 
-                    itens: window.cart, 
-                    total: totalFinal, 
-                    metodo: window.metodo, 
-                    pagamento: document.getElementById('payment').value, 
-                    status: "Pendente", 
-                    data: serverTimestamp() 
-                });
-
-                alert("Pedido Enviado com Sucesso! Redirecionando para acompanhamento...");
-                
-                // REDIRECIONAMENTO AUTOMÁTICO
-                document.getElementById('track-phone').value = tel;
-                document.getElementById('cart-modal').classList.add('hidden');
-                toggleSidebar(); // Abre as barrinhas
-                buscarStatus(); // Já busca o pedido novo
-                
-                // Limpa carrinho
-                window.cart = [];
-                window.total = 0;
-                document.getElementById('total-price').innerText = "0,00";
-
-            } catch (e) {
-                alert("Erro ao enviar. Tente novamente.");
-            }
+            if(!nome || !tel || window.cart.length === 0) return alert("Preencha os campos!");
+            const totalF = window.metodo === 'entrega' ? window.total + 2 : window.total;
+            await addDoc(collection(db, "pedidos"), { cliente: nome, telefone: tel, endereco: window.metodo === 'entrega' ? end : 'Retirada', itens: window.cart, total: totalF, metodo: window.metodo, pagamento: document.getElementById('payment').value, status: "Pendente", data: serverTimestamp() });
+            alert("Pedido Enviado!"); location.reload();
         };
 
         window.buscarStatus = () => {
             const tel = document.getElementById('track-phone').value;
             const res = document.getElementById('pedidos-lista');
-            if(!tel) return alert("Digite seu WhatsApp para consultar");
-
             onSnapshot(query(collection(db, "pedidos"), where("telefone", "==", tel), orderBy("data", "desc")), (snap) => {
                 res.innerHTML = "";
-                if(snap.empty) res.innerHTML = "<p class='text-center text-gray-400'>Nenhum pedido encontrado.</p>";
-                
                 snap.forEach(docSnap => {
                     const p = docSnap.data();
                     const s = p.status.toLowerCase();
-                    let cor = "bg-yellow-100 text-yellow-600 border-yellow-200";
+                    let cor = "bg-yellow-100 text-yellow-600";
                     let label = p.status;
-                    
                     if(s === 'saiu para entrega') { cor = "bg-orange-600 text-white font-black"; label = "🛵 SAIU P/ ENTREGA!"; }
                     if(s === 'pronto para retirada') { cor = "bg-purple-600 text-white font-black"; label = "🛍️ PODE BUSCAR!"; }
-                    if(s === 'concluido') { cor = "bg-green-100 text-green-600 border-green-200"; label = "Entregue ✅"; }
-                    if(s === 'preparando') { cor = "bg-blue-100 text-blue-600 border-blue-200"; label = "👨‍🍳 PREPARANDO"; }
-
-                    res.innerHTML += `
-                        <div class="bg-white p-4 rounded-2xl border-2 shadow-sm">
-                            <span class="px-2 py-1 rounded-lg text-[10px] font-black uppercase ${cor}">${label}</span>
-                            <p class="font-black text-sm mt-2">${p.itens.map(i => i.name).join(', ')}</p>
-                            <p class="text-[10px] text-gray-400 mt-1">Total: R$ ${p.total.toFixed(2)}</p>
-                        </div>`;
+                    if(s === 'concluido') { cor = "bg-green-100 text-green-600"; label = "Entregue ✅"; }
+                    res.innerHTML += `<div class="bg-gray-50 p-4 rounded-2xl border-2"><span class="px-2 py-1 rounded-lg text-[10px] font-black uppercase ${cor}">${label}</span><p class="font-black text-sm mt-2">${p.itens.map(i => i.name).join(', ')}</p></div>`;
                 });
             });
         };
