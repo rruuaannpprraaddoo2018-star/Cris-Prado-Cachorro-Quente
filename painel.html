@@ -2,16 +2,36 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel Cris Prado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Cris Prado | Gestão de Pedidos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .pedido-card { transition: all 0.3s ease; }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
 </head>
-<body class="bg-slate-900 text-white p-4 md:p-8">
-    <header class="flex justify-between items-center mb-8 border-b border-slate-700 pb-4">
-        <h1 class="text-3xl font-black text-yellow-400">PEDIDOS CRIS PRADO 🌭</h1>
-        <div class="text-green-500 font-bold text-sm">● LIVE</div>
+<body class="bg-slate-950 text-white p-4 md:p-8">
+    
+    <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b border-slate-800 pb-6">
+        <div>
+            <h1 class="text-3xl font-black text-yellow-400 tracking-tighter">COZINHA CRIS PRADO 🌭</h1>
+            <p class="text-slate-500 text-sm font-bold uppercase tracking-widest">Painel de Controle em Tempo Real</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="enableAudio()" id="btn-audio" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 border border-slate-700">
+                <span id="audio-status">🔈 ATIVAR SOM</span>
+            </button>
+            <div class="flex items-center gap-2 bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                <span class="text-green-500 font-black text-xs">LIVE</span>
+            </div>
+        </div>
     </header>
 
-    <div id="lista-pedidos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div id="lista-pedidos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        </div>
 
     <audio id="audio-alert" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
@@ -31,37 +51,91 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const audio = document.getElementById('audio-alert');
+        let audioEnabled = false;
 
+        window.enableAudio = () => {
+            audioEnabled = true;
+            document.getElementById('audio-status').innerText = "🔊 SOM ATIVADO";
+            document.getElementById('btn-audio').classList.replace('bg-slate-800', 'bg-green-600');
+            audio.play().then(() => audio.pause()); // Destrava o áudio no navegador
+        };
+
+        // Escuta os pedidos
         onSnapshot(query(collection(db, "pedidos"), orderBy("data", "desc")), (snap) => {
             const container = document.getElementById('lista-pedidos');
-            snap.docChanges().forEach(c => { if(c.type === "added") audio.play().catch(e => {}); });
+            
+            // Alerta sonoro para novos pedidos
+            snap.docChanges().forEach(change => {
+                if (change.type === "added" && audioEnabled) {
+                    audio.play().catch(e => console.log("Áudio aguardando interação"));
+                }
+            });
 
             container.innerHTML = "";
+
+            if (snap.empty) {
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-600 font-bold uppercase tracking-widest">Nenhum pedido no momento...</div>`;
+                return;
+            }
+
             snap.forEach(d => {
                 const p = d.data();
-                const isPreparando = p.status === 'preparando';
-                const isConcluido = p.status === 'concluido';
+                const status = (p.status || "Pendente").toLowerCase();
+                const isPreparando = status === 'preparando';
+                const isConcluido = ['concluido', 'finalizado', 'entregue'].includes(status);
                 
                 const card = document.createElement('div');
-                card.className = `p-5 rounded-2xl shadow-xl border-t-4 transition-all ${isConcluido ? 'opacity-60 bg-slate-800 border-green-500' : isPreparando ? 'bg-blue-900 border-blue-400 animate-pulse' : 'bg-slate-800 border-yellow-400'}`;
+                card.className = `pedido-card p-5 rounded-3xl shadow-2xl border-2 transition-all flex flex-col ${
+                    isConcluido ? 'bg-slate-900/50 border-slate-800 opacity-60' : 
+                    isPreparando ? 'bg-blue-900/40 border-blue-500 animate-pulse-slow' : 
+                    'bg-slate-900 border-yellow-500/50 shadow-yellow-500/10'
+                }`;
                 
+                // Formatação de Itens
+                const itensHtml = p.itens.map(i => `
+                    <div class="flex justify-between items-start gap-2 py-1 border-b border-white/5 last:border-0">
+                        <span class="text-white font-bold text-sm">${i.name}</span>
+                        <span class="text-yellow-400 font-mono text-xs">R$${i.price.toFixed(2)}</span>
+                    </div>
+                `).join('');
+
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-bold text-slate-400">${p.data ? new Date(p.data.toDate()).toLocaleTimeString() : '...'}</span>
-                        <span class="px-2 py-1 rounded text-[10px] font-black uppercase ${isConcluido ? 'bg-green-500' : isPreparando ? 'bg-blue-500' : 'bg-yellow-400 text-black'}">${p.status}</span>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[10px] font-black bg-white/10 px-2 py-1 rounded-lg text-slate-400">#${d.id.slice(-4).toUpperCase()}</span>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                            isConcluido ? 'bg-green-500 text-white' : 
+                            isPreparando ? 'bg-blue-500 text-white' : 'bg-yellow-400 text-black'
+                        }">${status}</span>
                     </div>
-                    <h3 class="text-xl font-bold">${p.cliente}</h3>
-                    <p class="text-xs text-blue-300 mb-2">📞 ${p.telefone}</p>
-                    <p class="text-sm text-slate-300 mb-4">${p.endereco}</p>
-                    <div class="bg-black/30 p-3 rounded-lg mb-4 text-sm font-mono italic">
-                        ${p.itens.map(i => `• ${i.name}`).join('<br>')}
+
+                    <div class="mb-4">
+                        <h3 class="text-xl font-black text-white leading-tight uppercase">${p.cliente}</h3>
+                        <div class="flex gap-2 mt-1">
+                             <a href="https://wa.me/55${p.telefone.replace(/\D/g,'')}?text=Olá ${p.cliente}, seu pedido do Cris Prado já está sendo preparado!" target="_blank" class="text-[11px] font-bold text-green-400 hover:underline">📱 ${p.telefone}</a>
+                        </div>
                     </div>
+
+                    <div class="bg-black/40 p-3 rounded-2xl mb-4">
+                        <p class="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest text-center">Itens do Pedido</p>
+                        ${itensHtml}
+                    </div>
+
+                    <div class="mb-4 space-y-1">
+                        <p class="text-xs text-slate-400 flex items-center gap-1">📍 <span class="truncate">${p.endereco}</span></p>
+                        <p class="text-xs text-slate-400 flex items-center gap-1">💳 <span>${p.pagamento} (${p.metodo})</span></p>
+                    </div>
+
+                    <div class="mt-auto pt-4 border-t border-white/10 flex justify-between items-center mb-4">
+                        <span class="text-xs font-black text-slate-500 uppercase">Total</span>
+                        <span class="text-2xl font-black text-green-400">R$ ${p.total ? p.total.toFixed(2) : '0.00'}</span>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-2">
                         ${!isConcluido ? `
-                            <button onclick="updateStatus('${d.id}', 'preparando')" class="bg-blue-600 p-2 rounded font-bold text-xs">PREPARAR</button>
-                            <button onclick="updateStatus('${d.id}', 'concluido')" class="bg-green-600 p-2 rounded font-bold text-xs">CONCLUÍDO</button>
+                            <button onclick="updateStatus('${d.id}', 'Preparando')" class="bg-blue-600 hover:bg-blue-500 p-3 rounded-xl font-black text-[10px] uppercase transition-colors">Preparar</button>
+                            <button onclick="updateStatus('${d.id}', 'Concluido')" class="bg-green-600 hover:bg-green-500 p-3 rounded-xl font-black text-[10px] uppercase transition-colors">Concluir</button>
                         ` : `
-                            <button onclick="arquivar('${d.id}')" class="col-span-2 bg-slate-700 p-2 rounded font-bold text-xs uppercase tracking-widest">Apagar do Painel</button>
+                            <button onclick="arquivar('${d.id}')" class="col-span-2 bg-slate-800 hover:bg-red-900/50 hover:text-red-400 p-3 rounded-xl font-black text-[10px] uppercase transition-all tracking-widest">Remover do Painel</button>
                         `}
                     </div>
                 `;
@@ -70,11 +144,17 @@
         });
 
         window.updateStatus = async (id, status) => {
-            await updateDoc(doc(db, "pedidos", id), { status });
+            try {
+                await updateDoc(doc(db, "pedidos", id), { status });
+            } catch (e) { alert("Erro ao atualizar status"); }
         };
 
         window.arquivar = async (id) => {
-            if(confirm("Remover permanentemente?")) await deleteDoc(doc(db, "pedidos", id));
+            if(confirm("Deseja remover este pedido da visualização?")) {
+                try {
+                    await deleteDoc(doc(db, "pedidos", id));
+                } catch (e) { alert("Erro ao remover"); }
+            }
         };
     </script>
 </body>
