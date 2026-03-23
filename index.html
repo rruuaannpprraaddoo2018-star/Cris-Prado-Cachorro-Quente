@@ -4,90 +4,154 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cris Prado | Hot Dog Premium</title>
+    
+    <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/85zXmYmG/logo-cris.jpg">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/85zXmYmG/logo-cris.jpg">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Pacifico&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <style>
         h1 { font-family: 'Bangers', cursive; }
         .slogan { font-family: 'Pacifico', cursive; }
-        body { font-family: 'Roboto', sans-serif; background-color: #f9fafb; background-image: url("https://www.transparenttextures.com/patterns/food.png"); background-attachment: fixed; }
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #f9fafb;
+            background-image: url("https://www.transparenttextures.com/patterns/food.png");
+            background-attachment: fixed;
+        }
         .sidebar { transition: 0.4s; transform: translateX(100%); }
         .sidebar.open { transform: translateX(0); }
-        .product-img { width: 70px; height: 70px; object-fit: contain; }
+        .product-img { width: 65px; height: 65px; object-fit: contain; }
+        .tab-active { border-bottom: 4px solid #dc2626; color: #dc2626; }
     </style>
 </head>
 <body class="pb-32">
 
-    <div id="sidebar" class="sidebar fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-[100] flex flex-col">
-        <div class="p-6 bg-red-600 text-white flex justify-between items-center">
-            <h2 class="font-black italic">MEUS PEDIDOS</h2>
-            <button onclick="toggleSidebar()" class="text-xl">✕</button>
+    <div id="sidebar" class="sidebar fixed inset-y-0 right-0 w-85 bg-white shadow-2xl z-[100] flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-red-600 text-white">
+            <h2 class="text-xl font-black italic">MEUS PEDIDOS</h2>
+            <button onclick="toggleSidebar()" class="text-2xl">✕</button>
         </div>
-        <div class="p-4 flex-1 overflow-y-auto">
-            <input type="number" id="track-phone" placeholder="Digite seu WhatsApp" class="w-full p-4 border-2 rounded-2xl mb-4 font-bold outline-none focus:border-red-500">
-            <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-4 rounded-2xl font-black text-xs uppercase mb-6">Consultar</button>
-            <div id="pedidos-lista" class="space-y-4"></div>
+
+        <div class="flex border-b text-center font-black text-xs uppercase tracking-widest">
+            <button id="tab-atual-btn" onclick="switchTab('atual')" class="flex-1 py-4 tab-active">Atual</button>
+            <button id="tab-recentes-btn" onclick="switchTab('recentes')" class="flex-1 py-4 text-gray-400">Recentes</button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-4">
+            <div id="status-container" class="space-y-4">
+                <input type="number" id="track-phone" placeholder="WhatsApp para consultar" class="w-full p-3 border-2 rounded-2xl mb-2 text-sm outline-none focus:border-red-500">
+                <button onclick="buscarStatus()" class="w-full bg-red-600 text-white py-3 rounded-2xl font-black text-xs shadow-md active:scale-95 transition uppercase">Buscar Manualmente</button>
+                
+                <div id="pedidos-lista" class="mt-6 space-y-4"></div>
+            </div>
+        </div>
+
+        <div class="p-4 border-t bg-gray-50">
+            <a href="https://wa.me/5517992110457" target="_blank" class="flex items-center justify-center gap-2 bg-green-500 text-white p-3 rounded-xl font-black text-xs uppercase">
+                <span>💬 WhatsApp da Loja</span>
+            </a>
         </div>
     </div>
+    
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-[90] hidden backdrop-blur-sm"></div>
 
     <header class="bg-red-600 text-white p-10 text-center shadow-xl border-b-4 border-yellow-400 relative">
-        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/20 p-2 rounded-xl text-xs font-bold uppercase">Status</button>
-        <h1 class="text-6xl italic text-yellow-100 drop-shadow-lg">Cris Prado</h1>
+        <button onclick="toggleSidebar()" class="absolute right-6 top-1/2 -translate-y-1/2">
+            <div class="space-y-1">
+                <div class="w-5 h-0.5 bg-white rounded-full"></div>
+                <div class="w-5 h-0.5 bg-white rounded-full"></div>
+                <div class="w-5 h-0.5 bg-white rounded-full"></div>
+            </div>
+        </button>
+        <h1 class="text-6xl mb-2 italic text-yellow-100 drop-shadow-lg">Cris Prado</h1>
         <p class="slogan text-2xl text-yellow-200">O melhor hot dog da região!</p>
+        <div id="status-loja" class="mt-4 inline-flex items-center gap-2 bg-black/30 px-5 py-2 rounded-full font-bold text-sm">
+            <span id="status-dot" class="w-3 h-3 rounded-full"></span>
+            <span id="status-text">Carregando...</span>
+        </div>
     </header>
 
     <main class="max-w-md mx-auto p-4 space-y-10">
-        <section>
-            <h2 class="text-2xl font-black mb-6 text-red-700 border-b-4 border-red-100 pb-2">🌭 Hot Dogs</h2>
-            <div id="lista-dogs" class="space-y-4"></div>
+        <section data-aos="fade-up">
+            <h2 class="text-2xl font-black mb-6 text-red-700 border-b-4 border-red-100 pb-2">🌭 Nossos Dogs</h2>
+            <div class="space-y-4" id="lista-dogs"></div>
         </section>
-        <section>
-            <h2 class="text-2xl font-black mb-6 text-blue-700 border-b-4 border-blue-100 pb-2">🥤 Bebidas</h2>
-            <div id="lista-bebidas" class="space-y-4"></div>
+        <section data-aos="fade-up">
+            <h2 class="text-2xl font-black mb-6 text-blue-700 border-b-4 border-blue-100 pb-2">🥤 Bebidas Geladas</h2>
+            <div class="space-y-4" id="lista-bebidas"></div>
         </section>
     </main>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-2xl z-50 rounded-t-[32px]">
-        <div><p class="text-[10px] font-black text-gray-400 uppercase">Total</p><span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span></div>
-        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-black text-lg uppercase shadow-lg">Finalizar</button>
+    <div class="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.1)] z-50 rounded-t-[32px]">
+        <div>
+            <p class="text-[10px] font-black text-gray-400 uppercase">Total do Carrinho</p>
+            <span class="text-3xl font-black text-red-600">R$ <span id="total-price">0,00</span></span>
+        </div>
+        <button onclick="toggleCartModal()" class="bg-red-600 text-white px-10 py-4 rounded-2xl font-black text-lg active:scale-95 transition shadow-lg shadow-red-500/30 uppercase">Finalizar 🛒</button>
     </div>
 
-    <div id="modal-mayo" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[120] p-4">
-        <div class="bg-white w-full max-w-sm p-8 rounded-[40px] text-center">
-            <h3 class="text-2xl font-black text-red-600 mb-6 italic">Escolha a Maionese</h3>
-            <select id="mayo-select" class="w-full p-4 border-2 rounded-2xl font-bold mb-8 outline-none">
+    <div id="modal-mayo" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[120] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-sm p-8 rounded-[40px] relative shadow-2xl text-center">
+            <button onclick="document.getElementById('modal-mayo').classList.add('hidden')" class="absolute top-6 left-6 text-gray-400 text-sm font-bold">← Voltar</button>
+            <h3 class="text-3xl font-black text-red-600 mb-6 mt-4 italic">Maionese</h3>
+            <select id="mayo-select" class="w-full p-5 border-2 border-gray-100 rounded-2xl font-bold mb-8 bg-gray-50 outline-none">
                 <option value="Maionese Verde">Maionese Verde (Casa)</option>
                 <option value="Maionese de Bacon">Maionese de Bacon</option>
                 <option value="Cebola Caramelizada">Cebola Caramelizada</option>
                 <option value="Sem Maionese">Sem Maionese</option>
             </select>
-            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-black">ADICIONAR ✅</button>
+            <button onclick="confirmLanche()" class="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition">ADICIONAR ✅</button>
         </div>
     </div>
 
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[110] p-4">
-        <div class="bg-white w-full max-w-md p-6 rounded-[35px] max-h-[90vh] overflow-y-auto">
+    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-[110] p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md p-8 rounded-[40px] max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <button onclick="toggleCartModal()" class="absolute top-6 right-8 text-2xl font-bold text-gray-300">✕</button>
             <h2 class="text-2xl font-black mb-6 uppercase">Finalizar Pedido</h2>
-            <div id="cart-items" class="space-y-3 mb-6"></div>
-            <div class="grid grid-cols-2 gap-4 mb-4 font-black text-[10px] uppercase">
-                <button onclick="setMetodo('entrega')" id="btn-entrega" class="p-3 rounded-xl border-2 border-red-600 text-red-600">Entregar</button>
-                <button onclick="setMetodo('retirada')" id="btn-retirada" class="p-3 rounded-xl border-2 border-gray-100 text-gray-400">Retirar</button>
+            
+            <div id="cart-items" class="space-y-4 mb-4 border-b pb-4"></div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button onclick="setMetodo('entrega')" id="btn-entrega" class="p-4 rounded-2xl border-2 border-red-600 bg-red-50 font-black text-xs uppercase text-red-600">Entregar</button>
+                <button onclick="setMetodo('retirada')" id="btn-retirada" class="p-4 rounded-2xl border-2 border-gray-100 font-black text-xs uppercase text-gray-400">Retirar</button>
             </div>
-            <input type="text" id="client-name" placeholder="Nome" class="w-full p-4 border rounded-xl mb-3 font-bold">
-            <input type="number" id="client-phone" placeholder="WhatsApp" class="w-full p-4 border rounded-xl mb-3 font-bold">
-            <input type="text" id="address" placeholder="Endereço (Rua, Nº, Bairro)" class="w-full p-4 border rounded-xl mb-3 font-bold">
-            <select id="payment" class="w-full p-4 border rounded-xl mb-6 font-bold">
-                <option value="Pix">Pix (17992110457)</option>
-                <option value="Cartão">Cartão (Maquininha)</option>
-                <option value="Dinheiro">Dinheiro</option>
-            </select>
-            <button onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-4 rounded-xl font-black text-xl shadow-xl">ENVIAR PEDIDO 🚀</button>
+
+            <div id="taxa-info" class="bg-blue-50 p-3 rounded-xl mb-4 flex justify-between items-center text-sm font-black text-blue-800">
+                <span>Taxa de Entrega</span>
+                <span>R$ 2,00</span>
+            </div>
+            
+            <div class="space-y-4">
+                <input type="text" id="client-name" placeholder="Nome Completo" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
+                <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
+                
+                <div id="endereco-field">
+                    <input type="text" id="address" placeholder="Endereço, Número e Bairro" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
+                </div>
+
+                <select id="payment" onchange="togglePixInfo()" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
+                    <option value="Pix">💳 Pix</option>
+                    <option value="Cartão">📟 Cartão (Maquininha)</option>
+                    <option value="Dinheiro">💵 Dinheiro</option>
+                </select>
+
+                <div id="pix-info" class="hidden bg-green-100 p-6 rounded-3xl border-4 border-dashed border-green-400 text-center">
+                    <p class="text-xs font-black uppercase mb-2 text-green-800 tracking-tighter">Chave Pix (Copia e Cola)</p>
+                    <p id="pix-key" class="font-black text-lg text-green-700 break-all select-all leading-tight">17992110457</p>
+                    <button onclick="copyPix()" class="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-black text-sm shadow-md uppercase">COPIAR CHAVE PIX</button>
+                </div>
+            </div>
+            
+            <button id="btn-finalizar" onclick="finalizarPedido()" class="w-full bg-green-500 text-white py-5 rounded-2xl font-black text-xl mt-8 shadow-xl active:scale-95 transition">ENVIAR PEDIDO 🚀</button>
         </div>
     </div>
 
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCFqUjWp4fBd_wl75uMmaGjRfJDS85FLe4",
@@ -100,64 +164,251 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const hotDogs = [{ n: "Carne", p: 14.90 }, { n: "Frango", p: 14.90 }, { n: "Misto", p: 14.90 }];
-        const bebidas = [
-            { n: "Coca-Cola 2L", p: 15.0, img: "https://images.tcdn.com.br/img/img_prod/1082210/coca_coca_2l_pack_8_1_1_2380938e61e93125191ebc11919fc1d7.png" },
-            { n: "Roller 2L", p: 10.0, img: "https://www.bebidaspoty.com.br/wp-content/uploads/2021/07/img-roller-2l.png" },
-            { n: "Cotuba 2L", p: 12.0, img: "https://ibassets.com.br/ib.item.image.large/l-bc173557e53f47e3848130883d69287d.jpeg" },
-            { n: "Coca lata 350ml", p: 6.0, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_350_ml_cx_153_1_69e0d310d5c2eee2f2d02c687ce191b0.png" },
-            { n: "Coca 600ml", p: 8.0, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_600_ml_cx_237_1_a6460d428f2f32c9e828220a8f4c3c83.png" },
-            { n: "Cotuba 600ml", p: 7.0, img: "https://ibassets.com.br/ib.item.image.large/l-4bb20c3b544647bb89de2b7ac8a29290.jpeg" },
-            { n: "Suco 500ml", p: 10.0, img: "https://app.cardapiodigital.net/tabuadecarne/1307-large_default/suco-laranja-500ml.jpg" },
-            { n: "Água com gás 500ml", p: 5.0, img: "https://andinacocacola.vtexassets.com/arquivos/ids/157851/113326_COCA---Crystal500ml-ComGas.jpg?v=638412001213470000" },
-            { n: "Água sem gás 500ml", p: 4.0, img: "https://www.imigrantesbebidas.com.br/bebida/images/products/full/2893-agua-mineral-crystal-sem-gas-500ml.jpg" }
-        ];
-
         window.cart = [];
         window.total = 0;
         window.metodo = 'entrega';
+        window.currentTab = 'atual';
+        const TAXA_ENTREGA = 2.00;
+        let unsubscribe = null;
         let tempItem = null;
 
-        window.onload = () => { renderMenu(); };
+        const hotDogs = [{ n: "Carne", p: 14.90 }, { n: "Frango", p: 14.90 }, { n: "Misto", p: 14.90 }];
+        const bebidas = [
+            { n: "Coca-Cola 2L", p: 15.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/coca_coca_2l_pack_8_1_1_2380938e61e93125191ebc11919fc1d7.png" },
+            { n: "Roller 2L", p: 10.00, img: "https://www.bebidaspoty.com.br/wp-content/uploads/2021/07/img-roller-2l.png" },
+            { n: "Cotuba 2L", p: 12.00, img: "https://ibassets.com.br/ib.item.image.large/l-bc173557e53f47e3848130883d69287d.jpeg" },
+            { n: "Coca lata 350ml", p: 6.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_350_ml_cx_153_1_69e0d310d5c2eee2f2d02c687ce191b0.png" },
+            { n: "Coca 600ml", p: 8.00, img: "https://images.tcdn.com.br/img/img_prod/1082210/refrigerante_coca_cola_600_ml_cx_237_1_a6460d428f2f32c9e828220a8f4c3c83.png" },
+            { n: "Cotuba 600ml", p: 7.00, img: "https://ibassets.com.br/ib.item.image.large/l-4bb20c3b544647bb89de2b7ac8a29290.jpeg" },
+            { n: "Suco 500ml", p: 10.00, img: "https://app.cardapiodigital.net/tabuadecarne/1307-large_default/suco-laranja-500ml.jpg" },
+            { n: "Água com gás 500ml", p: 5.00, img: "https://andinacocacola.vtexassets.com/arquivos/ids/157851/113326_COCA---Crystal500ml-ComGas.jpg?v=638412001213470000" },
+            { n: "Água sem gás 500ml", p: 4.00, img: "https://www.imigrantesbebidas.com.br/bebida/images/products/full/2893-agua-mineral-crystal-sem-gas-500ml.jpg" }
+        ];
+
+        window.onload = () => { 
+            AOS.init({ duration: 800 }); 
+            renderMenu(); 
+            checkStatus(); 
+            const savedPhone = localStorage.getItem('userPhone');
+            if(savedPhone) {
+                document.getElementById('track-phone').value = savedPhone;
+                buscarStatus();
+            }
+        };
 
         function renderMenu() {
-            document.getElementById('lista-dogs').innerHTML = hotDogs.map(d => `<div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50"><div class="flex-1"><h3 class="font-black text-xl">${d.n}</h3><p class="text-green-600 font-black">R$ ${d.p.toFixed(2)}</p></div><button onclick="openCustomization('${d.n}', ${d.p})" class="w-12 h-12 bg-red-600 text-white rounded-2xl font-black text-2xl">+</button></div>`).join('');
-            document.getElementById('lista-bebidas').innerHTML = bebidas.map(b => `<div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50"><div class="flex-1"><h3 class="font-black text-lg">${b.n}</h3><p class="text-green-600 font-black">R$ ${b.p.toFixed(2)}</p><button onclick="addToCart('${b.n}', ${b.p})" class="mt-2 bg-blue-600 text-white px-4 py-1 rounded-xl text-xs font-bold uppercase">Pedir</button></div><img src="${b.img}" class="product-img" onerror="this.src='https://placehold.co/100x100?text=Bebida'"></div>`).join('');
+            document.getElementById('lista-dogs').innerHTML = hotDogs.map(d => `
+                <div class="bg-white p-5 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
+                    <div class="flex-1"><h3 class="font-black text-xl">${d.n}</h3><p class="text-green-600 font-black">R$ ${d.p.toFixed(2)}</p></div>
+                    <div class="flex items-center gap-4 bg-gray-100 p-2 rounded-2xl">
+                        <button onclick="changeQty('${d.n}', ${d.p}, -1)" class="w-10 h-10 bg-white rounded-xl shadow font-bold text-red-500 text-xl">-</button>
+                        <span id="qty-${d.n}" class="font-black text-xl">0</span>
+                        <button onclick="openCustomization('${d.n}', ${d.p})" class="w-10 h-10 bg-red-600 text-white rounded-xl font-bold text-xl">+</button>
+                    </div>
+                </div>`).join('');
+
+            document.getElementById('lista-bebidas').innerHTML = bebidas.map(b => `
+                <div class="bg-white p-4 rounded-[30px] shadow-sm flex justify-between items-center border border-gray-50">
+                    <div class="flex-1"><h3 class="font-black text-lg">${b.n}</h3><p class="text-green-600 font-black">R$ ${b.p.toFixed(2)}</p>
+                        <div class="flex items-center gap-3 bg-gray-100 p-1 w-fit rounded-xl mt-2">
+                            <button onclick="changeQty('${b.n}', ${b.p}, -1)" class="w-8 h-8 bg-white rounded shadow text-red-500 font-bold">-</button>
+                            <span id="qty-${b.n}" class="font-bold w-4 text-center">0</span>
+                            <button onclick="changeQty('${b.n}', ${b.p}, 1)" class="w-8 h-8 bg-white rounded shadow text-green-600 font-bold">+</button>
+                        </div>
+                    </div>
+                    <img src="${b.img}" class="product-img ml-2" onerror="this.src='https://placehold.co/100x100?text=Bebida'">
+                </div>`).join('');
         }
 
-        window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('hidden'); };
-        window.setMetodo = (m) => { window.metodo = m; document.getElementById('address').style.display = m === 'entrega' ? 'block' : 'none'; };
-        window.openCustomization = (name, price) => { tempItem = { name, price }; document.getElementById('modal-mayo').classList.remove('hidden'); };
-        window.confirmLanche = () => { const mayo = document.getElementById('mayo-select').value; addToCart(`${tempItem.name} (${mayo})`, tempItem.price); document.getElementById('modal-mayo').classList.add('hidden'); };
-        window.addToCart = (name, price) => { window.cart.push({name, price}); window.total += price; document.getElementById('total-price').innerText = window.total.toFixed(2).replace('.', ','); };
-        window.toggleCartModal = () => { document.getElementById('cart-items').innerHTML = window.cart.map(i => `<div class="flex justify-between font-bold text-sm"><span>${i.name}</span><span>R$ ${i.price.toFixed(2)}</span></div>`).join(''); document.getElementById('cart-modal').classList.toggle('hidden'); };
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('hidden');
+        };
 
-        window.finalizarPedido = async () => {
-            const nome = document.getElementById('client-name').value;
-            const tel = document.getElementById('client-phone').value;
-            const end = document.getElementById('address').value;
-            if(!nome || !tel || window.cart.length === 0) return alert("Preencha os campos!");
-            const totalF = window.metodo === 'entrega' ? window.total + 2 : window.total;
-            await addDoc(collection(db, "pedidos"), { cliente: nome, telefone: tel, endereco: window.metodo === 'entrega' ? end : 'Retirada', itens: window.cart, total: totalF, metodo: window.metodo, pagamento: document.getElementById('payment').value, status: "Pendente", data: serverTimestamp() });
-            alert("Pedido Enviado!"); location.reload();
+        window.switchTab = (tab) => {
+            window.currentTab = tab;
+            document.getElementById('tab-atual-btn').className = tab === 'atual' ? 'flex-1 py-4 tab-active' : 'flex-1 py-4 text-gray-400';
+            document.getElementById('tab-recentes-btn').className = tab === 'recentes' ? 'flex-1 py-4 tab-active' : 'flex-1 py-4 text-gray-400';
+            buscarStatus();
         };
 
         window.buscarStatus = () => {
             const tel = document.getElementById('track-phone').value;
             const res = document.getElementById('pedidos-lista');
-            onSnapshot(query(collection(db, "pedidos"), where("telefone", "==", tel), orderBy("data", "desc")), (snap) => {
+            if(!tel) return;
+
+            localStorage.setItem('userPhone', tel);
+
+            if(unsubscribe) unsubscribe();
+
+            const q = query(collection(db, "pedidos"), where("telefone", "==", tel), orderBy("data", "desc"));
+            
+            unsubscribe = onSnapshot(q, (snap) => {
                 res.innerHTML = "";
+                let pedidosExibidos = 0;
+
                 snap.forEach(docSnap => {
                     const p = docSnap.data();
-                    const s = p.status.toLowerCase();
-                    let cor = "bg-yellow-100 text-yellow-600";
-                    let label = p.status;
-                    if(s === 'saiu para entrega') { cor = "bg-orange-600 text-white font-black"; label = "🛵 SAIU P/ ENTREGA!"; }
-                    if(s === 'pronto para retirada') { cor = "bg-purple-600 text-white font-black"; label = "🛍️ PODE BUSCAR!"; }
-                    if(s === 'concluido') { cor = "bg-green-100 text-green-600"; label = "Entregue ✅"; }
-                    res.innerHTML += `<div class="bg-gray-50 p-4 rounded-2xl border-2"><span class="px-2 py-1 rounded-lg text-[10px] font-black uppercase ${cor}">${label}</span><p class="font-black text-sm mt-2">${p.itens.map(i => i.name).join(', ')}</p></div>`;
+                    const statusLower = p.status.toLowerCase();
+                    const concluido = ['entregue', 'concluido', 'finalizado', 'cancelado'].includes(statusLower);
+                    
+                    if((window.currentTab === 'atual' && !concluido) || (window.currentTab === 'recentes' && concluido)) {
+                        pedidosExibidos++;
+                        const dataF = p.data ? p.data.toDate().toLocaleString('pt-BR') : 'Processando...';
+                        const idDoc = docSnap.id;
+                        
+                        let timerHtml = "";
+                        if(window.currentTab === 'atual' && p.data) {
+                            const agora = new Date();
+                            const diff = Math.floor((agora - p.data.toDate()) / 60000);
+                            if(diff < 15) {
+                                timerHtml = `<button onclick="cancelarPedido('${idDoc}')" class="w-full mt-3 bg-red-100 text-red-600 py-2 rounded-xl font-black text-[10px] uppercase">Cancelar Pedido (${15-diff}m rest.)</button>`;
+                            }
+                        }
+
+                        res.innerHTML += `
+                            <div class="bg-white p-4 rounded-3xl border-2 border-gray-100 shadow-sm">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-[10px] font-black bg-gray-100 px-2 py-1 rounded-lg">#${idDoc.slice(-4)}</span>
+                                    <span class="text-[10px] font-black text-red-600 uppercase italic">${p.status}</span>
+                                </div>
+                                <p class="text-xs font-black text-gray-700">${p.itens.map(i => i.name).join(', ')}</p>
+                                <div class="mt-3 flex justify-between items-center border-t pt-3">
+                                    <div class="text-[9px] text-gray-400 font-bold">
+                                        <p>${dataF}</p>
+                                        <p>${p.metodo.toUpperCase()} - ${p.pagamento}</p>
+                                    </div>
+                                    <p class="text-sm font-black text-green-600">R$ ${p.total.toFixed(2)}</p>
+                                </div>
+                                ${timerHtml}
+                            </div>`;
+                    }
                 });
+
+                if(pedidosExibidos === 0) {
+                    res.innerHTML = `<p class="text-center text-gray-400 py-10 font-bold text-xs uppercase italic">Nenhum pedido aqui</p>`;
+                }
             });
+        };
+
+        window.cancelarPedido = async (id) => {
+            if(confirm("Deseja cancelar seu pedido?")) {
+                await deleteDoc(doc(db, "pedidos", id));
+            }
+        };
+
+        window.togglePixInfo = () => {
+            const pay = document.getElementById('payment').value;
+            document.getElementById('pix-info').classList.toggle('hidden', pay !== 'Pix');
+        };
+
+        window.copyPix = () => {
+            const key = document.getElementById('pix-key').innerText;
+            navigator.clipboard.writeText(key);
+            alert("Chave Pix copiada!");
+        };
+
+        window.setMetodo = (m) => {
+            window.metodo = m;
+            document.getElementById('btn-entrega').className = m === 'entrega' ? 'p-4 rounded-2xl border-2 border-red-600 bg-red-50 font-black text-xs uppercase text-red-600' : 'p-4 rounded-2xl border-2 border-gray-100 font-black text-xs uppercase text-gray-400';
+            document.getElementById('btn-retirada').className = m === 'retirada' ? 'p-4 rounded-2xl border-2 border-red-600 bg-red-50 font-black text-xs uppercase text-red-600' : 'p-4 rounded-2xl border-2 border-gray-100 font-black text-xs uppercase text-gray-400';
+            document.getElementById('taxa-info').classList.toggle('hidden', m === 'retirada');
+            document.getElementById('endereco-field').classList.toggle('hidden', m === 'retirada');
+            updateTotalUI();
+        };
+
+        window.changeQty = (name, price, delta) => {
+            const qtySpan = document.getElementById(`qty-${name}`);
+            let current = parseInt(qtySpan.innerText);
+            let next = Math.max(0, current + delta);
+            if(next !== current) {
+                qtySpan.innerText = next;
+                window.total += (delta * price);
+                if(delta > 0) window.cart.push({id: Date.now(), name, price});
+                else { const idx = window.cart.findLastIndex(i => i.name.includes(name)); if(idx > -1) window.cart.splice(idx, 1); }
+                updateTotalUI();
+            }
+        };
+
+        window.openCustomization = (name, price) => { tempItem = { name, price }; document.getElementById('modal-mayo').classList.remove('hidden'); };
+        window.confirmLanche = () => {
+            const mayo = document.getElementById('mayo-select').value;
+            window.cart.push({ id: Date.now(), name: `${tempItem.name} (${mayo})`, price: tempItem.price });
+            window.total += tempItem.price;
+            document.getElementById(`qty-${tempItem.name}`).innerText = parseInt(document.getElementById(`qty-${tempItem.name}`).innerText) + 1;
+            updateTotalUI();
+            document.getElementById('modal-mayo').classList.add('hidden');
+        };
+
+        function updateTotalUI() {
+            const displayTotal = (window.total > 0 && window.metodo === 'entrega') ? window.total + TAXA_ENTREGA : window.total;
+            document.getElementById('total-price').innerText = displayTotal.toFixed(2).replace('.', ',');
+        }
+
+        window.toggleCartModal = () => {
+            const container = document.getElementById('cart-items');
+            if(window.cart.length === 0) { container.innerHTML = `<p class="text-center text-gray-400 py-6 font-bold uppercase text-xs">Vazio</p>`; }
+            else {
+                container.innerHTML = window.cart.map(i => `
+                    <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border">
+                        <div><p class="font-black text-sm">${i.name}</p><p class="text-green-600 font-bold text-xs">R$ ${i.price.toFixed(2)}</p></div>
+                        <button onclick="removeFromCart(${i.id}, ${i.price}, '${i.name}')" class="text-red-500 font-black text-[10px] uppercase">excluir</button>
+                    </div>`).join('');
+            }
+            togglePixInfo();
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        };
+
+        window.removeFromCart = (id, price, fullName) => {
+            const idx = window.cart.findIndex(i => i.id === id);
+            if(idx > -1) {
+                window.cart.splice(idx, 1);
+                window.total -= price;
+                let baseName = hotDogs.find(d => fullName.includes(d.n))?.n || fullName;
+                const qtySpan = document.getElementById(`qty-${baseName}`);
+                if(qtySpan) qtySpan.innerText = Math.max(0, parseInt(qtySpan.innerText) - 1);
+                updateTotalUI();
+                window.toggleCartModal(); window.toggleCartModal();
+            }
+        };
+
+        window.checkStatus = () => {
+            const hora = new Date().getHours();
+            const dia = new Date().getDay();
+            const aberto = (dia >= 2 && dia <= 6) && (hora >= 18 && hora < 23);
+            document.getElementById('status-dot').className = `w-3 h-3 rounded-full ${aberto ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`;
+            document.getElementById('status-text').innerText = aberto ? "ABERTO" : "FECHADO";
+        };
+
+        window.finalizarPedido = async () => {
+            const nome = document.getElementById('client-name').value;
+            const tel = document.getElementById('client-phone').value;
+            const end = document.getElementById('address').value;
+            const pag = document.getElementById('payment').value;
+
+            if(!nome || !tel || (window.metodo === 'entrega' && !end) || window.cart.length === 0) return alert("Preencha todos os campos!");
+
+            const totalFinal = (window.metodo === 'entrega') ? window.total + TAXA_ENTREGA : window.total;
+
+            try {
+                await addDoc(collection(db, "pedidos"), {
+                    cliente: nome, telefone: tel, endereco: (window.metodo === 'entrega' ? end : 'Retirada no Local'), 
+                    itens: window.cart, total: totalFinal, metodo: window.metodo,
+                    pagamento: pag, status: "Pendente", data: serverTimestamp()
+                });
+                
+                alert("PEDIDO RECEBIDO! 🌭🚀");
+                
+                window.cart = [];
+                window.total = 0;
+                document.querySelectorAll('[id^="qty-"]').forEach(span => span.innerText = '0');
+                updateTotalUI();
+
+                document.getElementById('cart-modal').classList.add('hidden');
+                document.getElementById('track-phone').value = tel;
+                switchTab('atual');
+                toggleSidebar();
+            } catch (e) { alert("Erro ao enviar pedido."); }
         };
     </script>
 </body>
