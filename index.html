@@ -124,14 +124,6 @@
             </div>
             
             <div class="space-y-4">
-                <div class="bg-yellow-50 p-4 rounded-2xl border border-yellow-100">
-                    <p class="font-black text-sm mb-2 text-yellow-700 italic">Maionese Extra no potinho?</p>
-                    <div class="flex gap-6">
-                        <label class="flex items-center gap-2 font-bold text-sm cursor-pointer"><input type="radio" name="mayo-extra" value="Sim"> Sim</label>
-                        <label class="flex items-center gap-2 font-bold text-sm cursor-pointer"><input type="radio" name="mayo-extra" value="Não" checked> Não</label>
-                    </div>
-                </div>
-
                 <input type="text" id="client-name" placeholder="Nome Completo" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
                 <input type="number" id="client-phone" placeholder="WhatsApp (DDD + Número)" class="w-full p-4 border rounded-2xl font-bold bg-gray-50 outline-none">
                 
@@ -145,10 +137,10 @@
                     <option value="Dinheiro">💵 Dinheiro</option>
                 </select>
 
-                <div id="pix-info" class="hidden bg-green-50 p-4 rounded-2xl border-2 border-dashed border-green-300 text-center">
-                    <p class="text-[10px] font-black uppercase mb-2">Chave Pix (Copia e Cola)</p>
-                    <p id="pix-key" class="font-black text-xs text-green-700 break-all select-all">17992110457</p>
-                    <button onclick="copyPix()" class="mt-2 text-[10px] bg-green-600 text-white px-3 py-1 rounded-lg font-bold">COPIAR CHAVE</button>
+                <div id="pix-info" class="hidden bg-green-100 p-6 rounded-3xl border-4 border-dashed border-green-400 text-center">
+                    <p class="text-xs font-black uppercase mb-2 text-green-800 tracking-tighter">Chave Pix (Copia e Cola)</p>
+                    <p id="pix-key" class="font-black text-lg text-green-700 break-all select-all leading-tight">17992110457</p>
+                    <button onclick="copyPix()" class="mt-4 w-full bg-green-600 text-white py-3 rounded-xl font-black text-sm shadow-md uppercase">COPIAR CHAVE PIX</button>
                 </div>
             </div>
             
@@ -197,7 +189,6 @@
             AOS.init({ duration: 800 }); 
             renderMenu(); 
             checkStatus(); 
-            // Recupera o telefone se já existir no navegador
             const savedPhone = localStorage.getItem('userPhone');
             if(savedPhone) {
                 document.getElementById('track-phone').value = savedPhone;
@@ -246,7 +237,7 @@
             const res = document.getElementById('pedidos-lista');
             if(!tel) return;
 
-            localStorage.setItem('userPhone', tel); // Salva para não ter que digitar sempre
+            localStorage.setItem('userPhone', tel);
 
             if(unsubscribe) unsubscribe();
 
@@ -364,7 +355,7 @@
                         <button onclick="removeFromCart(${i.id}, ${i.price}, '${i.name}')" class="text-red-500 font-black text-[10px] uppercase">excluir</button>
                     </div>`).join('');
             }
-            togglePixInfo(); // Garante que o Pix apareça se já estiver selecionado
+            togglePixInfo();
             document.getElementById('cart-modal').classList.toggle('hidden');
         };
 
@@ -394,7 +385,6 @@
             const tel = document.getElementById('client-phone').value;
             const end = document.getElementById('address').value;
             const pag = document.getElementById('payment').value;
-            const mayoExtra = document.querySelector('input[name="mayo-extra"]:checked').value;
 
             if(!nome || !tel || (window.metodo === 'entrega' && !end) || window.cart.length === 0) return alert("Preencha todos os campos!");
 
@@ -404,12 +394,11 @@
                 await addDoc(collection(db, "pedidos"), {
                     cliente: nome, telefone: tel, endereco: (window.metodo === 'entrega' ? end : 'Retirada no Local'), 
                     itens: window.cart, total: totalFinal, metodo: window.metodo,
-                    pagamento: pag, mayoExtra: mayoExtra, status: "Pendente", data: serverTimestamp()
+                    pagamento: pag, status: "Pendente", data: serverTimestamp()
                 });
                 
                 alert("PEDIDO RECEBIDO! 🌭🚀");
                 
-                // Limpeza Total
                 window.cart = [];
                 window.total = 0;
                 document.querySelectorAll('[id^="qty-"]').forEach(span => span.innerText = '0');
